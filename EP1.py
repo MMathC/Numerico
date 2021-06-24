@@ -45,6 +45,34 @@ def autovetores(n): # retorna a matriz identidade com ordem n x n
         line+= 1
     return np.array(V)
 
+def escalonador(A, b):
+    
+
+def givens(i, j, col, A, k, b):
+    # i: linha superior;
+    # j: linha inferior, que contém o elemento que deseja zerar;
+    # A: matriz tridiagonal simétrica
+    # k: k-ésima coluna da matriz A, onde será aplicada a rotação de Givens;
+    if abs(A[i][k]) > abs(A[j][k]):
+        tau = -A[j][k] / A[i][k]
+        c = 1 / ((1 + tau**2)**0.5)
+        s = c * tau
+    else:
+        tau = -A[i][k] / A[j][k]
+        s = 1 / ((1 + tau**2)**0.5)
+        c = s * tau
+        
+    for rG in range(0, col, 1):
+        aux1 = c * A[i][rG] + c * A[j][rG]
+        A[i][rG] = aux1
+    aux2 = b[i]
+    b[i] = c * b[i] - s * b[i]
+    b[j] = s * aux2 - c * b[j]
+    
+    return A, b
+
+
+
 A = np.array([[2,1,0,0],[1,2,1,0],[0,1,2,1],[0,0,1,2]])
 print(A)
 Q1, R1 = np.linalg.qr(A)
