@@ -106,7 +106,14 @@ print(np.around(Q1@B,3),"\n")
 A = np.array([[4,3,0],[3,4,3],[0,3,4]])
 R = np.array([[5, 24/5, 9/5],[0, 7/5, 12/5],[0,3,4]])
 Q1 = R @ np.linalg.inv(A)
-print("Matriz Q: \n",np.round(Q1,5))
+Rn = [[5, 24/5, 9/5],[0, 54.8/math.sqrt(247),76.8/math.sqrt(247)],[0,0,-8/math.sqrt(247)]]
+Q2 = Rn @ np.linalg.inv(Q1 @ A)
+
+print("Matriz Q1: \n",np.round(Q1,5),"\n")
+print("Matriz Q2: \n",np.round(Q2,5),"\n")
+print("Matriz R: \n",np.round(Q2@Q1@A,5),"\n")
+
+print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,8),"\n")
 
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
