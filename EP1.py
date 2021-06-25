@@ -26,8 +26,7 @@ def det(autovalores):
     return det
 
 
-
-def autovetores(n): # retorna a matriz identidade com ordem n x n 
+def identidade(n): # retorna a matriz identidade com ordem n x n 
     V = []
     v = []
     line = 0
@@ -45,7 +44,7 @@ def autovetores(n): # retorna a matriz identidade com ordem n x n
         line+= 1
     return np.array(V)
 
-def escalonador(A, b):
+#def escalonador(A, b):
     
 
 def givens(i, j, col, A, k, b):
@@ -68,9 +67,25 @@ def givens(i, j, col, A, k, b):
     aux2 = b[i]
     b[i] = c * b[i] - s * b[i]
     b[j] = s * aux2 - c * b[j]
-    
     return A, b
 
+A = np.array([[2,1,0,0],[1,2,1,0],[0,1,2,1],[0,0,1,2]])
+R = np.array([[5/math.sqrt(5), 4/math.sqrt(5), 1/math.sqrt(5), 0],[0, 3/math.sqrt(5), 2/math.sqrt(5), 0],[0,1,2,1],[0,0,1,2]])
+Q1 = R @ np.linalg.inv(A)
+print("Matriz Q: \n",np.round(Q1,5))
+
+
+c1 = 2/ math.sqrt(5)
+s1 = -1/ math.sqrt(5)
+Q = [[c1,-s1,0,0],[s1,c1,0,0],[0,0,1,0],[0,0,0,1]]
+
+R1 = Q@A
+print("Matriz R1: \n", np.around(R1,5))
+'''for i in range(np.shape(A[0])):
+    for j in range(np.shape(A[1])):
+        b[i] = c1 * b[i] - s1 * b[i]
+        b[j] = s1 * aux2 - c1 * b[j]'''
+        
 
 
 A = np.array([[2,1,0,0],[1,2,1,0],[0,1,2,1],[0,0,1,2]])
@@ -88,7 +103,34 @@ print(np.around(Q1@B,3),"\n")
 #print(Q1@A)
     
 
+A = np.array([[4,3,0],[3,4,3],[0,3,4]])
+R = np.array([[5, 24/5, 9/5],[0, 7/5, 12/5],[0,3,4]])
+Q1 = R @ np.linalg.inv(A)
+print("Matriz Q: \n",np.round(Q1,5))
 
+# ------------------------------------------------------------------------- #
+#                                   Tarefa 
+# ------------------------------------------------------------------------- #
+
+# ------------------------------------------------------------------------- #
+#                                   item a
+# ------------------------------------------------------------------------- #
+
+def tar1(n):
+    #lambdaj = 2*(1-math.cos(j*math.pi/(n+1))) # Auto-valores
+    #vj = (math.sin(j*math.pi/(n+1))) # Auto-vetores
+    alfak = 2
+    betak = -1
+    A = identidade(n)
+    for i in range(n):
+        for j in range(n):
+            if j == i:
+                A[i][j] = alfak
+            if j == i+1 or j == i-1:
+                A[i][j] = betak
+
+    print(A)
+A = np.array([[2,-1,0,0],[-1,2,-1,0],[0,-1,2,-1],[0,0,-1,2]]) # Matriz tridiagonal simetrica
 
 
 
