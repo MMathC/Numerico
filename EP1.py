@@ -4,6 +4,7 @@ Created on Sat Jun 12 19:36:58 2021
 
 @author: matheus
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import math
 
@@ -34,7 +35,7 @@ def identidade(n): # retorna a matriz identidade com ordem n x n
     for i in range(n):
         for j in range(n):
             if line == i and column == j and line == column:
-                v.append(1)
+                v.append(float(1))
                 column+=1
             else:
                 v.append(0)
@@ -61,33 +62,22 @@ def givens(i, j, col, A, k, b):
         s = 1 / ((1 + tau**2)**0.5)
         c = s * tau
         
-    for rG in range(0, col, 1):
-        aux1 = c * A[i][rG] + c * A[j][rG]
-        A[i][rG] = aux1
+    for r in range(0, col, 1):
+        aux1 = c * A[i][r] + c * A[j][r]
+        A[i][r] = aux1
     aux2 = b[i]
     b[i] = c * b[i] - s * b[i]
     b[j] = s * aux2 - c * b[j]
     return A, b
 
+'''
 A = np.array([[2,1,0,0],[1,2,1,0],[0,1,2,1],[0,0,1,2]])
 R = np.array([[5/math.sqrt(5), 4/math.sqrt(5), 1/math.sqrt(5), 0],[0, 3/math.sqrt(5), 2/math.sqrt(5), 0],[0,1,2,1],[0,0,1,2]])
 Q1 = R @ np.linalg.inv(A)
-print("Matriz Q: \n",np.round(Q1,5))
+print("Matriz Q: \n",np.round(Q1,5))'''
 
-
-c1 = 2/ math.sqrt(5)
-s1 = -1/ math.sqrt(5)
-Q = [[c1,-s1,0,0],[s1,c1,0,0],[0,0,1,0],[0,0,0,1]]
-
-R1 = Q@A
-print("Matriz R1: \n", np.around(R1,5))
-'''for i in range(np.shape(A[0])):
-    for j in range(np.shape(A[1])):
-        b[i] = c1 * b[i] - s1 * b[i]
-        b[j] = s1 * aux2 - c1 * b[j]'''
         
-
-
+'''
 A = np.array([[2,1,0,0],[1,2,1,0],[0,1,2,1],[0,0,1,2]])
 print(A)
 Q1, R1 = np.linalg.qr(A)
@@ -99,22 +89,75 @@ for i in range(20):
     Q1, R1 = np.linalg.qr(B)
     B = Q1.T @ B @ Q1
     
-print(np.around(Q1@B,3),"\n")
+print(np.around(Q1@B,3),"\n")'''
 #print(Q1@A)
     
 
 A = np.array([[4,3,0],[3,4,3],[0,3,4]])
-R = np.array([[5, 24/5, 9/5],[0, 7/5, 12/5],[0,3,4]])
-Q1 = R @ np.linalg.inv(A)
-Rn = [[5, 24/5, 9/5],[0, 54.8/math.sqrt(247),76.8/math.sqrt(247)],[0,0,-8/math.sqrt(247)]]
-Q2 = Rn @ np.linalg.inv(Q1 @ A)
+Rn = np.array([[5, 24/5, 9/5],[0, 7/5, 12/5],[0,3,4]])
+Q1 = Rn @ np.linalg.inv(A)
+R = [[5, 24/5, 9/5],[0, 54.8/math.sqrt(247),76.8/math.sqrt(247)],[0,0,-8/math.sqrt(247)]]
+Q2 = R @ np.linalg.inv(Q1 @ A)
 
 print("Matriz Q1: \n",np.round(Q1,5),"\n")
+print("Matriz Rn: \n",np.round(Rn,5),"\n")
 print("Matriz Q2: \n",np.round(Q2,5),"\n")
 print("Matriz R: \n",np.round(Q2@Q1@A,5),"\n")
 
-print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,8),"\n")
+print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,5),"\n")
+def tGivens (A, i, j, k):
+    alfak = A[i][k]
+    betak = A[j][k]
+    print("alfak: ",alfak,"\n")
+    print("betak: ",betak,"\n")
+    if abs(alfak)>abs(betak):
+        tau = - betak/alfak
+        ck = 1/(math.sqrt(1+tau**2))
+        sk = ck * tau
+    else:
+        tau = - alfak/betak
+        sk = 1/(math.sqrt(1+tau**2))
+        ck = sk * tau
+    return ck , sk
 
+def ajuste(A, i, j, k, ck, sk):
+    lp = 1
+    print("i: ",i)
+    print("j: ",j)
+    print("k: ",k,"\n")
+    while lp >= 0:
+        if i == k:
+            A[i][k] = ck
+            i+=1
+        if j!=k:
+            if k>j:
+                A[j][k] = -sk
+            else:
+                A[j][k] = sk
+                k += 1
+                j-=1
+        lp -= 1
+    print("i: ",i-1)
+    print("j: ",j)
+    print("k: ",k,"\n")
+    return A, i-1, k
+    
+def QR(A,n):
+    Q2 = identidade(n)
+    ck, sk = tGivens(A,0,1,0)
+    auxi = 0
+    auxj = 0
+    lp = 2
+    Q1 = identidade(n)
+    Q1, auxi, auxj = ajuste(Q1, auxi, auxi+1, auxj, ck, sk)
+    Ri = Q1@A
+    print("Q1: \n", Q1, "\n")
+    print("Ri: \n", Ri, "\n")
+    ck, sk = tGivens(Ri, auxi, auxi+1, auxj)
+    Q2, auxi, auxj = ajuste(Q2, auxi, auxi+1, auxj, ck, sk)
+    print("Q2: \n",Q2,"\n")
+    
+    print(A)
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
@@ -124,7 +167,6 @@ print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,8),"\n")
 # ------------------------------------------------------------------------- #
 
 def tar1(n):
-    #lambdaj = 2*(1-math.cos(j*math.pi/(n+1))) # Auto-valores
     #vj = (math.sin(j*math.pi/(n+1))) # Auto-vetores
     alfak = 2
     betak = -1
@@ -136,6 +178,9 @@ def tar1(n):
             if j == i+1 or j == i-1:
                 A[i][j] = betak
 
+
+    for j in range(n):
+        lambdaj = 2*(1-math.cos(j*math.pi/(n+1))) # Auto-valores
     print(A)
 A = np.array([[2,-1,0,0],[-1,2,-1,0],[0,-1,2,-1],[0,0,-1,2]]) # Matriz tridiagonal simetrica
 
