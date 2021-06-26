@@ -164,7 +164,10 @@ def QR(A,n):
         Qr = identidade(n)
         print("R: \n",np.around(R,5),"\n")
     Ak = R @ Q_ts
-    print("A: \n",np.around(Ak,5))
+    print("Ak: \n",np.around(Ak,5))
+    print(autovalor(Ak))
+    autovalores = autovalor(Ak)
+    return Ak, autovalores
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
@@ -185,6 +188,28 @@ def tar1(n):
             if j == i+1 or j == i-1:
                 A[i][j] = betak
     return A
+a, autovalores = QR(tar1(4),4)
+matrix, autovalores = QR(a,4)
+n = 4
+lambdavec = []
+for j in range(-n,0):
+    lambdaj = 2*(1-math.cos((j)*math.pi/(n+1))) # Auto-valores
+    lambdavec.append(lambdaj)
+print("auto-valores: ",lambdavec)
+
+
+erros = []
+iteracoes = 2
+while 
+    for i in range(n):
+        logic = abs(lambdavec[i]-autovalores[i])
+        if logic > 10**(-6):
+            matrix, autovalores = QR(matrix,4)
+            iteracoes+=1
+        erros.append(logic)
+    
+print("erros: ",erros)
+    
 '''
     for j in range(n):
         lambdaj = 2*(1-math.cos(j*math.pi/(n+1))) # Auto-valores
