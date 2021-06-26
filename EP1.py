@@ -147,17 +147,21 @@ def QR(A,n):
     ck, sk = tGivens(A,0,1,0)
     auxi = 0
     auxj = 0
-    lp = 2
     Q1 = identidade(n)
     Q1, auxi, auxj = ajuste(Q1, auxi, auxi+1, auxj, ck, sk)
-    Ri = Q1@A
-    print("Q1: \n", Q1, "\n")
-    print("Ri: \n", Ri, "\n")
-    ck, sk = tGivens(Ri, auxi, auxi+1, auxj)
-    Q2, auxi, auxj = ajuste(Q2, auxi, auxi+1, auxj, ck, sk)
-    print("Q2: \n",Q2,"\n")
-    
-    print(A)
+    R = Q1@A
+    print("Q1: \n", np.around(Q1,5), "\n")
+    print("R: \n", np.around(R,5), "\n")
+    for r in range(n-2):
+        ck, sk = tGivens(R, auxi, auxi+1, auxj)
+        Q2, auxi, auxj = ajuste(Q2, auxi, auxi+1, auxj, ck, sk)
+        print("Q2: \n",np.around(Q2,5),"\n")
+        R = Q2@R
+        Q2 = identidade(n)
+        print("R: \n",np.around(R,5),"\n")
+    Q = Q1.T @ Q2.T
+    A = R @ Q
+    print(np.around(A,5))
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
@@ -177,13 +181,13 @@ def tar1(n):
                 A[i][j] = alfak
             if j == i+1 or j == i-1:
                 A[i][j] = betak
-
-
+    return A
+'''
     for j in range(n):
         lambdaj = 2*(1-math.cos(j*math.pi/(n+1))) # Auto-valores
     print(A)
 A = np.array([[2,-1,0,0],[-1,2,-1,0],[0,-1,2,-1],[0,0,-1,2]]) # Matriz tridiagonal simetrica
-
+'''
 
 
 '''   
