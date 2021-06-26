@@ -102,7 +102,7 @@ Q2 = R @ np.linalg.inv(Q1 @ A)
 print("Matriz Q1: \n",np.round(Q1,5),"\n")
 print("Matriz Rn: \n",np.round(Rn,5),"\n")
 print("Matriz Q2: \n",np.round(Q2,5),"\n")
-print("Matriz R: \n",np.round(Q2@Q1@A,5),"\n")
+print("Matriz R: \n",np.round(Q2@Q1@A,5),"\n") #errado
 
 print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,5),"\n")
 def tGivens (A, i, j, k):
@@ -143,7 +143,7 @@ def ajuste(A, i, j, k, ck, sk):
     return A, i-1, k
     
 def QR(A,n):
-    Q2 = identidade(n)
+    Qr = identidade(n)
     ck, sk = tGivens(A,0,1,0)
     auxi = 0
     auxj = 0
@@ -152,16 +152,19 @@ def QR(A,n):
     R = Q1@A
     print("Q1: \n", np.around(Q1,5), "\n")
     print("R: \n", np.around(R,5), "\n")
+    Q_ts = Q1.T
+    print("A: \n", np.around(A,5), "\n")
     for r in range(n-2):
         ck, sk = tGivens(R, auxi, auxi+1, auxj)
-        Q2, auxi, auxj = ajuste(Q2, auxi, auxi+1, auxj, ck, sk)
+        Qr, auxi, auxj = ajuste(Qr, auxi, auxi+1, auxj, ck, sk)
         print("Q2: \n",np.around(Q2,5),"\n")
-        R = Q2@R
-        Q2 = identidade(n)
+        Q_ts = Q_ts @ Qr.T
+        print("Qs: \n",np.around(Q_ts,5),"\n")
+        R = Qr@R
+        Qr = identidade(n)
         print("R: \n",np.around(R,5),"\n")
-    Q = Q1.T @ Q2.T
-    A = R @ Q
-    print(np.around(A,5))
+    Ak = R @ Q_ts
+    print("A: \n",np.around(Ak,5))
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
