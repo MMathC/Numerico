@@ -104,7 +104,7 @@ print("Matriz Rn: \n",np.round(Rn,5),"\n")
 print("Matriz Q2: \n",np.round(Q2,5),"\n")
 print("Matriz R: \n",np.round(Q2@Q1@A,5),"\n") #errado
 
-print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,5),"\n")
+print("Matriz A1: \n",np.round(Q2@Q1@A@Q1.T@Q2.T,6),"\n")
 def tGivens (A, i, j, k):
     alfak = A[i][k]
     betak = A[j][k]
@@ -150,21 +150,21 @@ def QR(A,n):
     Q1 = identidade(n)
     Q1, auxi, auxj = ajuste(Q1, auxi, auxi+1, auxj, ck, sk)
     R = Q1@A
-    print("Q1: \n", np.around(Q1,5), "\n")
-    print("R: \n", np.around(R,5), "\n")
+    print("Q1: \n", np.around(Q1,6), "\n")
+    print("R: \n", np.around(R,6), "\n")
     Q_ts = Q1.T
-    print("A: \n", np.around(A,5), "\n")
+    print("A: \n", np.around(A,6), "\n")
     for r in range(n-2):
         ck, sk = tGivens(R, auxi, auxi+1, auxj)
         Qr, auxi, auxj = ajuste(Qr, auxi, auxi+1, auxj, ck, sk)
-        print("Q2: \n",np.around(Q2,5),"\n")
+        print("Q2: \n",np.around(Q2,6),"\n")
         Q_ts = Q_ts @ Qr.T
-        print("Qs: \n",np.around(Q_ts,5),"\n")
+        print("Qs: \n",np.around(Q_ts,6),"\n")
         R = Qr@R
         Qr = identidade(n)
-        print("R: \n",np.around(R,5),"\n")
+        print("R: \n",np.around(R,6),"\n")
     Ak = R @ Q_ts
-    print("Ak: \n",np.around(Ak,5))
+    print("Ak: \n",np.around(Ak,6))
     print(autovalor(Ak))
     autovalores = autovalor(Ak)
     return Ak, autovalores
@@ -188,27 +188,33 @@ def tar1(n):
             if j == i+1 or j == i-1:
                 A[i][j] = betak
     return A
-a, autovalores = QR(tar1(4),4)
-matrix, autovalores = QR(a,4)
 n = 4
+a, autovalores = QR(tar1(n),n)
+matrix, autovalores = QR(a,n)
 lambdavec = []
 for j in range(-n,0):
     lambdaj = 2*(1-math.cos((j)*math.pi/(n+1))) # Auto-valores
     lambdavec.append(lambdaj)
-print("auto-valores: ",lambdavec)
+print("auto-valores: \n",lambdavec)
 
 
 erros = []
 iteracoes = 2
-while 
-    for i in range(n):
-        logic = abs(lambdavec[i]-autovalores[i])
-        if logic > 10**(-6):
-            matrix, autovalores = QR(matrix,4)
-            iteracoes+=1
+
+i = 0
+while i < n:
+    logic = abs(lambdavec[i]-autovalores[i])
+    print("logic: ",logic)
+    if logic > 1e-6:
+        i = 0
+        matrix, autovalores = QR(matrix,n)
+        iteracoes+=1
+    else:
         erros.append(logic)
+        i+=1
     
-print("erros: ",erros)
+print("erros: \n",erros)
+print("iterações: ",iteracoes)
     
 '''
     for j in range(n):
