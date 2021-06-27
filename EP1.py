@@ -39,7 +39,6 @@ def identidade(n): # retorna a matriz identidade com ordem n x n
                 column+=1
             else:
                 v.append(0)
-        #print(v)
         V.append(v)
         v = []
         line+= 1
@@ -104,50 +103,90 @@ def ajuste(A, i, j, k, ck, sk):
                 j-=1
         lp -= 1
     return A, i-1, k
+
+def sgn(d):
+    if d >= 0:
+        return 1
+    else:
+        return -1
     
-def QR(A,n):
+def heuristicaWilkinson(alfakanterior, alfak, betakanterior):
+    dk = (alfakanterior - alfak)/2
+    
+    mik = alfak - sgn(dk) * math.sqrt(dk**2 - betakanterior**2)
+    
+    return mik
+    
+def QR(A,n, Vi):
     Qr = identidade(n)
     ck, sk = tGivens(A,0,1,0)
     auxi = 0
     auxj = 0
     Q1 = identidade(n)
     Q1, auxi, auxj = ajuste(Q1, auxi, auxi+1, auxj, ck, sk)
-    V1 = identidade(n)
     R = Q1@A
     Q_ts = Q1.T
-    autovetores = V1@Q_ts
     for r in range(n-2):
         ck, sk = tGivens(R, auxi, auxi+1, auxj)
         Qr, auxi, auxj = ajuste(Qr, auxi, auxi+1, auxj, ck, sk)
         Q_ts = Q_ts @ Qr.T
-        autovetores = autovetores @ Qr.T
         R = Qr@R
         Qr = identidade(n)
+    autovetores = Vi @ Q_ts
     Ak = R @ Q_ts
     autovalores = autovalor(Ak)
     return Ak, autovalores, autovetores
 
 def erros(A, n):
-    a, autovalores, autovetores = QR(A,n)
-    matrix, autovalores, autovetores = QR(a,n)
+    Vi = identidade(n)
+    a, autovalores, autovetores = QR(A,n,Vi)
+    print("autovetores: \n",autovetores,"\n")
+    matrix, autovalores, autovetores = QR(a,n,autovetores)
+    print("autovetores: \n",autovetores,"\n")
     lambdavec = []
+    vj = identidade(n)
     for j in range(-n,0):
-        lambdaj = 2*(1-math.cos((j)*math.pi/(n+1))) # Auto-valores
+        lambdaj = 2*(1-math.cos((-j)*math.pi/(n+1))) # Auto-valores
         lambdavec.append(lambdaj)
+        
+    for j in range (-n,0):
+        for i in range (-n,0):
+            vj[j][i] = math.sin(abs(i)*abs(j)*math.pi/(n+1)) # Auto-vetores
+    print("vj: \n",vj,"\n")
+    
     erros = []
     iteracoes = 2
     i = 0
+    j = 0
     while i < n:
         logic = abs(lambdavec[i]-autovalores[i])
         if logic > 1e-6:
             i = 0
-            matrix, autovalores, autovetores = QR(matrix,n)
+            matrix, autovalores, autovetores = QR(matrix,n, autovetores)
             iteracoes+=1
         else:
             erros.append(logic)
             i+=1
+            
+    '''
+    j = 0
+    for i in range(n):
+        while j < n:
+            logic = abs(vj[i][j]-autovetores[i][j])
+            if logic > 1e-6:
+                j = 0
+                matrix, autovalores, autovetores = QR(matrix,n)
+                iteracoes+=1
+            else:
+                j+=1'''
+            
+            
+    return iteracoes, autovalores, autovetores, lambdavec
 
-    return iteracoes
+
+    
+    
+    
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
@@ -157,7 +196,6 @@ def erros(A, n):
 # ------------------------------------------------------------------------- #
 
 def tar1(n):
-    #vj = (math.sin(j*math.pi/(n+1))) # Auto-vetores
     alfak = 2
     betak = -1
     A = identidade(n)
@@ -167,17 +205,17 @@ def tar1(n):
                 A[i][j] = alfak
             if j == i+1 or j == i-1:
                 A[i][j] = betak
-    iteracoes = erros(A,n)
-    print("iterações: ",iteracoes)
-
+    iteracoes, autovalores, autovetores, lambdavec = erros(A,n)
+    autovetores[:] = autovetores[3::-1]
+    print("Número de iterações: ",iteracoes,"\n")
+    print("Autovalores encontrados: \n",autovalores,"\n")
+    print("Autovalores analíticos: \n",lambdavec,"\n")
+    print("Autovetores encontrados: \n",autovetores,"\n")
 
 
 # ------------------------------------------------------------------------- #
 #                                   item b
 # ------------------------------------------------------------------------- #
-
-
-
 
 
 
@@ -203,7 +241,7 @@ def main():
     print("3 - item c")
     escolha = int(input("Escolha qual item do exercício programa rodar: "))
     if escolha == 1:
+        k = int(input("Escolha o valor de k: "))
         n = int(input("Escolha o tamanho n da matriz simétrica desejada: "))
         tar1(n)
-
 main()
