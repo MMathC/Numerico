@@ -137,6 +137,24 @@ def QR(A,n, Vi):
     autovalores = autovalor(Ak)
     return Ak, autovalores, autovetores
 
+def diminui(A, n):
+    Anova = identidade(n-1)
+    for i in range(n-1):
+        for j in range (n-1):
+            Anova[i][j] = A[i][j]
+    return Anova, n-1
+
+def verificaBeta(A,n):
+    if A[n-1][n-2] <= 1e-6:
+        if n > 2:
+            A, n = diminui(A,n)
+            print(A)
+            verificaBeta(A,n)
+        else:
+            return True
+    else:
+        return False
+        
 def erros(A, n):
     Vi = identidade(n)
     a, autovalores, autovetores = QR(A,n,Vi)
@@ -156,6 +174,14 @@ def erros(A, n):
     iteracoes = 2
     i = 0
     j = 0
+    verif = verificaBeta(matrix,n)
+    while not verif:
+        if not verif:
+            matrix, autovalores, autovetores = QR(matrix,n, autovetores)
+            iteracoes+=1
+            verif = verificaBeta(matrix,n)
+        
+        
     while i < n:
         logic = abs(lambdavec[i]-autovalores[i])
         if logic > 1e-6:
