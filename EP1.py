@@ -149,11 +149,9 @@ def erros(A, n):
         lambdaj = 2*(1-math.cos((-j)*math.pi/(n+1))) # Auto-valores
         lambdavec.append(lambdaj)
         
-    for j in range (-n,0):
-        for i in range (-n,0):
-            vj[j][i] = math.sin(abs(i)*abs(j)*math.pi/(n+1)) # Auto-vetores
-    print("vj: \n",vj,"\n")
-    
+    for j in range (n):
+        for i in range (n):
+            vj[j][i] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores
     erros = []
     iteracoes = 2
     i = 0
@@ -181,7 +179,7 @@ def erros(A, n):
                 j+=1'''
             
             
-    return iteracoes, autovalores, autovetores, lambdavec
+    return iteracoes, autovalores, autovetores, lambdavec, vj
 
 
     
@@ -205,13 +203,12 @@ def tar1(n):
                 A[i][j] = alfak
             if j == i+1 or j == i-1:
                 A[i][j] = betak
-    iteracoes, autovalores, autovetores, lambdavec = erros(A,n)
-    autovetores[:] = autovetores[3::-1]
+    iteracoes, autovalores, autovetores, lambdavec, vj = erros(A,n)
     print("Número de iterações: ",iteracoes,"\n")
     print("Autovalores encontrados: \n",autovalores,"\n")
     print("Autovalores analíticos: \n",lambdavec,"\n")
     print("Autovetores encontrados: \n",autovetores,"\n")
-
+    print("Autovetores analíticos: \n",vj,"\n")
 
 # ------------------------------------------------------------------------- #
 #                                   item b
