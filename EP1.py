@@ -44,7 +44,6 @@ def identidade(n): # retorna a matriz identidade com ordem n x n
         line+= 1
     return np.array(V)
 
-#def escalonador(A, b):
     
 '''
 def givens(i, j, col, A, k, b):
@@ -142,25 +141,23 @@ def diminui(A, n):
     for i in range(n-1):
         for j in range (n-1):
             Anova[i][j] = A[i][j]
-    return Anova, n-1
+    n_ = n - 1
+    return Anova, n_
 
 def verificaBeta(A,n):
-    if A[n-1][n-2] <= 1e-6:
+    if abs(A[n-1][n-2]) <= 1e-6:
         if n > 2:
             A, n = diminui(A,n)
-            print(A)
-            verificaBeta(A,n)
+            return verificaBeta(A,n)
         else:
-            return True
+            return n
     else:
-        return False
-        
+        return 0
+
 def erros(A, n):
     Vi = identidade(n)
     a, autovalores, autovetores = QR(A,n,Vi)
-    print("autovetores: \n",autovetores,"\n")
     matrix, autovalores, autovetores = QR(a,n,autovetores)
-    print("autovetores: \n",autovetores,"\n")
     lambdavec = []
     vj = identidade(n)
     for j in range(-n,0):
@@ -170,18 +167,19 @@ def erros(A, n):
     for j in range (n):
         for i in range (n):
             vj[j][i] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores
-    erros = []
+
     iteracoes = 2
     i = 0
-    j = 0
-    verif = verificaBeta(matrix,n)
-    while not verif:
-        if not verif:
+    n1 = verificaBeta(matrix,n)
+    while n1 > 2 or n1 == 0:
+        if n1 == 0:
             matrix, autovalores, autovetores = QR(matrix,n, autovetores)
             iteracoes+=1
-            verif = verificaBeta(matrix,n)
-        
-        
+            n1 = verificaBeta(matrix,n)
+            
+    return iteracoes, autovalores, autovetores, lambdavec, vj
+            
+'''        
     while i < n:
         logic = abs(lambdavec[i]-autovalores[i])
         if logic > 1e-6:
@@ -192,20 +190,7 @@ def erros(A, n):
             erros.append(logic)
             i+=1
             
-    '''
-    j = 0
-    for i in range(n):
-        while j < n:
-            logic = abs(vj[i][j]-autovetores[i][j])
-            if logic > 1e-6:
-                j = 0
-                matrix, autovalores, autovetores = QR(matrix,n)
-                iteracoes+=1
-            else:
-                j+=1'''
-            
-            
-    return iteracoes, autovalores, autovetores, lambdavec, vj
+'''          
 
 
     
