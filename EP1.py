@@ -44,35 +44,6 @@ def identidade(n): # retorna a matriz identidade com ordem n x n
         line+= 1
     return np.array(V)
 
-    
-'''
-def givens(i, j, col, A, k, b):
-    # i: linha superior;
-    # j: linha inferior, que contém o elemento que deseja zerar;
-    # A: matriz tridiagonal simétrica
-    # k: k-ésima coluna da matriz A, onde será aplicada a rotação de Givens;
-    if abs(A[i][k]) > abs(A[j][k]):
-        tau = -A[j][k] / A[i][k]
-        c = 1 / ((1 + tau**2)**0.5)
-        s = c * tau
-    else:
-        tau = -A[i][k] / A[j][k]
-        s = 1 / ((1 + tau**2)**0.5)
-        c = s * tau
-        
-    for r in range(0, col, 1):
-        aux1 = c * A[i][r] + c * A[j][r]
-        A[i][r] = aux1
-    aux2 = b[i]
-    b[i] = c * b[i] - s * b[i]
-    b[j] = s * aux2 - c * b[j]
-    return A, b'''
-    
-A = np.array([[4,3,0],[3,4,3],[0,3,4]])
-Rn = np.array([[5, 24/5, 9/5],[0, 7/5, 12/5],[0,3,4]])
-Q1 = Rn @ np.linalg.inv(A)
-R = [[5, 24/5, 9/5],[0, 54.8/math.sqrt(247),76.8/math.sqrt(247)],[0,0,-8/math.sqrt(247)]]
-Q2 = R @ np.linalg.inv(Q1 @ A)
 
 def tGivens (A, i, j, k):
     alfak = A[i][k]
@@ -112,9 +83,7 @@ def sgn(d):
 def heuristicaWilkinson(alfan_1, alfan, betan_1, desloc):
     if desloc == 's':
         dk = (alfan_1 - alfan)/2
-        #print("dk: ",dk)
         mik = alfan + dk - sgn(dk) * math.sqrt(dk**2 + betan_1**2)
-        #print("mik: ",mik)
         return mik
     return 0
 
@@ -123,14 +92,7 @@ def deslocamento(mik,n):
     
 def QR(A,n, Vi , desloc):
     Qr = identidade(n)
-    #print("alfan_1: ",A[n-2][n-2],"\n")
-    #print("alfan: ",A[n-1][n-1],"\n")
-    #print("betan_1: ",A[n-1][n-2],"\n")
-    
     mik = heuristicaWilkinson(A[n-2][n-2],A[n-1][n-1],A[n-1][n-2],desloc)
-    print("n: ",n)
-    print("mik: ",mik)
-    #print("deslocamento: \n",deslocamento(mik * identidade(n),n),"\n")
     A = A - deslocamento(mik * identidade(n),n)
     ck, sk = tGivens(A,0,1,0)
     auxi = 0
@@ -140,10 +102,6 @@ def QR(A,n, Vi , desloc):
     R = Q1@A
     Q_ts = Q1.T
 
-    #print("A: \n",A,"\n")
-    #print("alfan_1: ",A[n-2][n-2],"\n")
-    #print("alfan: ",A[n-1][n-1],"\n")
-    #print("betan_1: ",A[n-1][n-2],"\n")
     for r in range(n-2):
         ck, sk = tGivens(R, auxi, auxi+1, auxj)
         Qr, auxi, auxj = ajuste(Qr, auxi, auxi+1, auxj, ck, sk)
@@ -153,11 +111,6 @@ def QR(A,n, Vi , desloc):
     autovetores = Vi @ Q_ts
     Ak = (R @ Q_ts) + deslocamento(mik * identidade(n),n)
     autovalores = autovalor(Ak)
-    print("Ak: \n",Ak,"\n")
-    #print("alfan_1: ",Ak[n-2][n-2],"\n")
-    #print("alfan: ",Ak[n-1][n-1],"\n")
-    #print("betan_1: ",Ak[n-1][n-2],"\n")
-    #print("autovetores: \n",autovetores)
     return Ak, autovalores, autovetores
 
 def diminui(A, n):
@@ -165,63 +118,97 @@ def diminui(A, n):
     for i in range(n-1):
         for j in range (n-1):
             Anova[i][j] = A[i][j]
-    n_ = n - 1
-    return Anova, n_
+    return Anova
+
+def diminuivet(A,n):
+    Anova = []
+    for i in range(n-1):
+        Anova.append(A[i])
+    return Anova
 
 def verificaBeta(A,n):
     if abs(A[n-1][n-2]) < 1e-6:
-        if n > 2:
-            A, n = diminui(A,n)
-            return verificaBeta(A,n)
-        else:
-            return n
+        Aux = diminui(A,n)
+        menor = True
+        return menor, Aux, A
     else:
-        return 0
+        menor = False
+        return menor, A, A
 
-def erros(A, n, desloc):
-    Vi = identidade(n)
-    a, autovalores, autovetores = QR(A,n,Vi, 'n')
-    #print("a: \n",a,"\n")
-    matrix, autovalores, autovetores = QR(a,n,autovetores,desloc)
+def matrizPrincipal(Anova, Amain, n_, n):
+    for i in range(len(Anova)):
+        for j in range(len(Anova[0])):
+            Amain[i][j] = Anova[i][j]
+    return Amain
+
+def vetorPrincipal(Anova, Amain, n_):
+    for i in range(n_):
+        Amain[i] = Anova[i]
+    return Amain
+
+def calculosAnaliticos(n):
     lambdavec = []
     vj = identidade(n)
     for j in range(-n,0):
-        lambdaj = 2*(1-math.cos((-j)*math.pi/(n+1))) # Auto-valores
+        lambdaj = 2*(1-math.cos((-j)*math.pi/(n+1))) # Auto-valores analiticos
         lambdavec.append(lambdaj)
-        
     for j in range (n):
         for i in range (n):
-            vj[j][i] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores
+            vj[j][i] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores analiticos
+    return lambdavec, vj
     
+    
+def erros(A, n, desloc):
+    Vi = identidade(n)
+    A, autovalores, autovetores = QR(A,n,Vi, 'n')
+    n_ = n
+
+    matrix, autovalores, autovetores = QR(A,n_,autovetores,desloc)
     iteracoes = 2
-    i = 0
+    menor, Aux, A = verificaBeta(matrix,n)
 
-    n1 = verificaBeta(matrix,n)
-    while n1 > 2 or n1 == 0:
-        if n1 == 0:
-            matrix, autovalores, autovetores = QR(matrix,n, autovetores,desloc)
+
+    while menor == False:
+        Aux, autovalores, autovetores = QR(Aux,n_,autovetores,desloc)
+        iteracoes+=1
+        menor, Aux, A = verificaBeta(Aux,n_)
+        if menor == True:
+            n_-= 1
+            autovetoresAux = diminui(autovetores,n)
+            autovetores = matrizPrincipal(autovetoresAux,autovetores,n_,n)
+            autovaloresAux = diminuivet(autovalores,n)
+            autovalores = vetorPrincipal(autovaloresAux, autovalores,n_) 
+            
+            
+    Aux, autovaloresAux, autovetoresAux = QR(Aux,n_,autovetoresAux,desloc)
+    iteracoes+=1
+    menor, Aux, Ai = verificaBeta(Aux,n_)
+
+    while n_ >= 2:
+        if menor == False:
+            Aux, autovaloresAux, autovetoresAux = QR(Aux,n_,autovetoresAux,desloc)
             iteracoes+=1
-            n1 = verificaBeta(matrix,n)
-            
-    return iteracoes, autovalores, autovetores, lambdavec, vj
-            
-'''        
-    while i < n:
-        logic = abs(lambdavec[i]-autovalores[i])
-        if logic > 1e-6:
-            i = 0
-            matrix, autovalores, autovetores = QR(matrix,n, autovetores)
-            iteracoes+=1
-        else:
-            erros.append(logic)
-            i+=1
-            
-'''          
+            menor, Aux, Ai = verificaBeta(Aux,n_)
 
+        if menor == True:
+            if n_> 2:
+                autovetoresAux = diminui(autovetoresAux,n_)
+                autovaloresAux = diminuivet(autovaloresAux,n_)
+                n_ -= 1
+                autovetores = matrizPrincipal(autovetoresAux,autovetores,n_,n)
+                autovalores = vetorPrincipal(autovaloresAux, autovalores,n_)
+                A = matrizPrincipal(Ai,A,n_,n)
+                Aux, autovaloresAux, autovetoresAux = QR(Aux,n_,autovetoresAux,desloc)
+                iteracoes+=1
+                menor, Aux, Ai = verificaBeta(Aux,n_)
+            else:
+                autovetores = matrizPrincipal(autovetoresAux,autovetores,n_,n)
+                autovalores = vetorPrincipal(autovaloresAux, autovalores,n_)
+                n_-=1
+                
 
-    
-    
-    
+    return iteracoes, autovalores, autovetores
+
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
@@ -240,7 +227,8 @@ def tar1(n,desloc):
                 A[i][j] = alfak
             if j == i+1 or j == i-1:
                 A[i][j] = betak
-    iteracoes, autovalores, autovetores, lambdavec, vj = erros(A,n,desloc)
+    iteracoes, autovalores, autovetores = erros(A,n,desloc)
+    lambdavec, vj = calculosAnaliticos(n)
     matrizAux = identidade(n)
     for i in range(n):
         for j in range(-n,0):
@@ -263,7 +251,6 @@ def tar1(n,desloc):
 # ------------------------------------------------------------------------- #
 #                                   item c
 # ------------------------------------------------------------------------- #
-
 
 
 
