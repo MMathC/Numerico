@@ -48,14 +48,8 @@ def identidade(n): # retorna a matriz identidade com ordem n x n
 def tGivens (A, i, j, k):
     alfak = A[i][k]
     betak = A[j][k]
-    if abs(alfak)>abs(betak):
-        tau = - betak/alfak
-        ck = 1/(math.sqrt(1+tau**2))
-        sk = ck * tau
-    else:
-        tau = - alfak/betak
-        sk = 1/(math.sqrt(1+tau**2))
-        ck = sk * tau
+    ck = alfak/math.sqrt((alfak**2)+(betak**2))
+    sk = -betak/math.sqrt((alfak**2)+(betak**2))
     return ck , sk
 
 def ajuste(A, i, j, k, ck, sk):
@@ -90,7 +84,8 @@ def heuristicaWilkinson(alfan_1, alfan, betan_1, desloc):
 def deslocamento(mik,n):
     return mik * identidade(n)
     
-def QR(A,n, Vi , desloc):
+def QR(A, Vi, desloc):
+    n = len(A)
     Qr = identidade(n)
     mik = heuristicaWilkinson(A[n-2][n-2],A[n-1][n-1],A[n-1][n-2],desloc)
     A = A - deslocamento(mik * identidade(n),n)
@@ -101,7 +96,6 @@ def QR(A,n, Vi , desloc):
     Q1, auxi, auxj = ajuste(Q1, auxi, auxi+1, auxj, ck, sk)
     R = Q1@A
     Q_ts = Q1.T
-
     for r in range(n-2):
         ck, sk = tGivens(R, auxi, auxi+1, auxj)
         Qr, auxi, auxj = ajuste(Qr, auxi, auxi+1, auxj, ck, sk)
@@ -111,38 +105,39 @@ def QR(A,n, Vi , desloc):
     autovetores = Vi @ Q_ts
     Ak = (R @ Q_ts) + deslocamento(mik * identidade(n),n)
     autovalores = autovalor(Ak)
+    
     return Ak, autovalores, autovetores
 
-def diminui(A, n):
-    Anova = identidade(n-1)
-    for i in range(n-1):
-        for j in range (n-1):
+def diminui(A):
+    Anova = identidade(len(A)-1)
+    for i in range(len(A)-1):
+        for j in range (len(A)-1):
             Anova[i][j] = A[i][j]
     return Anova
 
-def diminuivet(A,n):
-    Anova = []
-    for i in range(n-1):
-        Anova.append(A[i])
+def diminuivet(A):
+    Anova = np.array([])
+    for i in range(len(A)-1):
+        Anova = np.append(Anova,A[i])
     return Anova
 
-def verificaBeta(A,n):
-    if abs(A[n-1][n-2]) < 1e-6:
-        Aux = diminui(A,n)
+def verificaBeta(A):
+    if abs(A[len(A)-1][len(A)-2]) < 1e-6:
+        Aux = diminui(A)
         menor = True
         return menor, Aux, A
     else:
         menor = False
         return menor, A, A
 
-def matrizPrincipal(Anova, Amain, n_, n):
+def matrizPrincipal(Anova, Amain):
     for i in range(len(Anova)):
         for j in range(len(Anova[0])):
             Amain[i][j] = Anova[i][j]
     return Amain
 
-def vetorPrincipal(Anova, Amain, n_):
-    for i in range(n_):
+def vetorPrincipal(Anova, Amain):
+    for i in range(len(Anova)):
         Amain[i] = Anova[i]
     return Amain
 
@@ -154,60 +149,88 @@ def calculosAnaliticos(n):
         lambdavec.append(lambdaj)
     for j in range (n):
         for i in range (n):
-            vj[j][i] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores analiticos
+            vj[i][j] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores analiticos
     return lambdavec, vj
     
     
 def erros(A, n, desloc):
     Vi = identidade(n)
-    A, autovalores, autovetores = QR(A,n,Vi, 'n')
+    A, autovalores, autovetores = QR(A,Vi,'n')
     n_ = n
-
-    matrix, autovalores, autovetores = QR(A,n_,autovetores,desloc)
+    print("0 autovetores: \n",autovetores,"\n")
+    matrix, autovalores, autovetores = QR(A,autovetores,desloc)
     iteracoes = 2
-    menor, Aux, A = verificaBeta(matrix,n)
+    menor, Aux, A = verificaBeta(matrix)
 
 
     while menor == False:
-        Aux, autovalores, autovetores = QR(Aux,n_,autovetores,desloc)
+        print("iteração: ",iteracoes)
+        print("1 autovetores: \n",autovetores,"\n")
+        Aux, autovalores, autovetores = QR(Aux,autovetores,desloc)
+        print("1 autovetores: \n",autovetores,"\n")
         iteracoes+=1
-        menor, Aux, A = verificaBeta(Aux,n_)
+        menor, Aux, A = verificaBeta(Aux)
         if menor == True:
             n_-= 1
-            autovetoresAux = diminui(autovetores,n)
-            autovetores = matrizPrincipal(autovetoresAux,autovetores,n_,n)
-            autovaloresAux = diminuivet(autovalores,n)
-            autovalores = vetorPrincipal(autovaloresAux, autovalores,n_) 
+            print("iteração: ",iteracoes)
+            autovetoresAux = diminui(autovetores)
+            print("2 autovetoresAux: \n",autovetoresAux,"\n")
+            autovetores = matrizPrincipal(autovetoresAux,autovetores)
+            print("2 autovetores: \n",autovetores,"\n")
+            autovaloresAux = diminuivet(autovalores)
+            autovalores = vetorPrincipal(autovaloresAux, autovalores) 
             
             
-    Aux, autovaloresAux, autovetoresAux = QR(Aux,n_,autovetoresAux,desloc)
+    Aux, autovaloresAux, autovetoresAux = QR(Aux,autovetoresAux,desloc)
     iteracoes+=1
-    menor, Aux, Ai = verificaBeta(Aux,n_)
+    menor, Aux, Ai = verificaBeta(Aux)
 
     while n_ >= 2:
         if menor == False:
-            Aux, autovaloresAux, autovetoresAux = QR(Aux,n_,autovetoresAux,desloc)
+            print("iteração: ",iteracoes)
+            print("3 autovetoresAux: \n",autovetoresAux,"\n")
+            Aux, autovaloresAux, autovetoresAux = QR(Aux,autovetoresAux,desloc)
             iteracoes+=1
-            menor, Aux, Ai = verificaBeta(Aux,n_)
+            menor, Aux, Ai = verificaBeta(Aux)
+            print("3 autovetoresAux: \n",autovetoresAux,"\n")
 
         if menor == True:
             if n_> 2:
-                autovetoresAux = diminui(autovetoresAux,n_)
-                autovaloresAux = diminuivet(autovaloresAux,n_)
+                print("iteração: ",iteracoes)
+                autovetoresAux = diminui(autovetoresAux)
+                print("4 autovetoresAux: \n",autovetoresAux,"\n")
+                autovaloresAux = diminuivet(autovaloresAux)
                 n_ -= 1
-                autovetores = matrizPrincipal(autovetoresAux,autovetores,n_,n)
-                autovalores = vetorPrincipal(autovaloresAux, autovalores,n_)
-                A = matrizPrincipal(Ai,A,n_,n)
-                Aux, autovaloresAux, autovetoresAux = QR(Aux,n_,autovetoresAux,desloc)
+                autovetores = matrizPrincipal(autovetoresAux,autovetores)
+                print("4 autovetores: \n",autovetores,"\n")
+                autovalores = vetorPrincipal(autovaloresAux, autovalores)
+                A = matrizPrincipal(Ai,A)
+                Aux, autovaloresAux, autovetoresAux = QR(Aux,autovetoresAux,desloc)
                 iteracoes+=1
-                menor, Aux, Ai = verificaBeta(Aux,n_)
+                print("4 autovetoresAux: \n",autovetoresAux,"\n")
+                menor, Aux, Ai = verificaBeta(Aux)
+                print("menor: ",menor,"\n")
             else:
-                autovetores = matrizPrincipal(autovetoresAux,autovetores,n_,n)
-                autovalores = vetorPrincipal(autovaloresAux, autovalores,n_)
+                print("iteração: ",iteracoes)
+                autovetores = matrizPrincipal(autovetoresAux,autovetores)
+                print("5 autovetores: \n",autovetores,"\n")
+                autovalores = vetorPrincipal(autovaloresAux, autovalores)
                 n_-=1
                 
-
     return iteracoes, autovalores, autovetores
+
+def normalizacao(autovetores):
+    normalizado = 0
+    normas = np.array([])
+    for j in range(len(autovetores)):
+        for i in range(len(autovetores[0])):
+            normalizado += (autovetores[i][j])**2
+        norma = math.sqrt(normalizado)
+        normas = np.append(normas, norma)
+    for j in range(len(autovetores)):
+        for i in range(len(autovetores[0])):
+            autovetores[j][i] = autovetores[j][i]/normas[j]
+    return autovetores
 
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
@@ -232,7 +255,10 @@ def tar1(n,desloc):
     matrizAux = identidade(n)
     for i in range(n):
         for j in range(-n,0):
-            matrizAux[i][j] = autovetores[i][((j-2*j)-1)]
+            matrizAux[i][j] = autovetores[i][((-j)-1)]
+    
+    
+
     print("Número de iterações: ",iteracoes,"\n")
     print("Autovalores encontrados: \n",autovalores,"\n")
     print("Autovalores analíticos: \n",lambdavec,"\n")
@@ -242,8 +268,64 @@ def tar1(n,desloc):
 # ------------------------------------------------------------------------- #
 #                                   item b
 # ------------------------------------------------------------------------- #
+def ki(i):
+    ki = 40 + 2*i
+    return ki
 
+def matrizki():
+    ks = identidade(6)
+    for i in range(len(ks)):
+        for j in range(len(ks[0])):
+            if j == i:
+                ks[i][j] = ki(i+1) + ki(i+2)
+            if j == i+1:
+                ks[i][j] = -ki(i+1)
+            elif j == i-1:
+                ks[i][j] = -ki(j+1)
+    return ks
 
+def matrizAutovalores(autovalores):
+    matrizAutovalores = identidade(len(autovalores))
+    for i in range(len(autovalores)):
+        for j in range(len(autovalores)):
+            if i == j:
+                matrizAutovalores[i][j] = autovalores[i]
+    return matrizAutovalores
+
+def tempo():
+    time = np.array([])
+    t = 0
+    while t <= 10:
+        time = np.append(time,t)
+        t += 0.025
+    return time
+
+#Funcao que Plota os Valores das massas
+def plotar_massas(Xt):
+    n = len(Xt)
+
+    fig, axs = plt.subplots(n)
+    fig.suptitle('Posição das Massas [m] X Tempo [s]')
+    t = np.linspace(0,10,int(10/0.025))
+    for i in range(n):
+        axs[i].plot(t,Xt[i])
+        axs[i].legend(str(i + 1),loc='upper right')
+    plt.show()
+
+def tar2(m):
+    A = (1/m) * matrizki()
+    iteracoes, autovalores, X = erros(A,len(A),'s')
+    #iteracoes, autovalores, X = erros(X,-3,'s')
+    #iteracoes, autovalores, X = erros(X,-1,'s')
+    #iteracoes, autovalores, X = erros(X,-3,'s')
+    #iteracoes, autovalores, X = erros(X,-1,'s')
+    
+    print(autovalores)
+    print(X)
+    a = matrizAutovalores(autovalores)
+    print(a)
+    n = len(autovalores)
+    print(tempo())
 
 
 
@@ -264,9 +346,17 @@ def main():
     print("1 - item a")
     print("2 - item b")
     print("3 - item c")
-    escolha = int(input("Escolha qual item do exercício programa rodar: "))
+    escolha = int(input("Escolha qual item do exercício programa: "))
     if escolha == 1:
         desloc = str(input("Com deslocamento (s/n): "))
         n = int(input("Escolha o tamanho n da matriz simétrica desejada: "))
+        print("\n")
+        print("Os resultados obtidos foram: \n")
         tar1(n,desloc)
+    if escolha == 2:
+        m = int(input("Massa: "))
+        
+        print("Os resultados obtidos foram: \n")
+        tar2(m)
+        
 main()
