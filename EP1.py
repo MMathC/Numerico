@@ -157,26 +157,18 @@ def erros(A, n, desloc):
     Vi = identidade(n)
     A, autovalores, autovetores = QR(A,Vi,'n')
     n_ = n
-    print("0 autovetores: \n",autovetores,"\n")
     matrix, autovalores, autovetores = QR(A,autovetores,desloc)
     iteracoes = 2
     menor, Aux, A = verificaBeta(matrix)
 
-
     while menor == False:
-        print("iteração: ",iteracoes)
-        print("1 autovetores: \n",autovetores,"\n")
         Aux, autovalores, autovetores = QR(Aux,autovetores,desloc)
-        print("1 autovetores: \n",autovetores,"\n")
         iteracoes+=1
         menor, Aux, A = verificaBeta(Aux)
         if menor == True:
             n_-= 1
-            print("iteração: ",iteracoes)
             autovetoresAux = diminui(autovetores)
-            print("2 autovetoresAux: \n",autovetoresAux,"\n")
             autovetores = matrizPrincipal(autovetoresAux,autovetores)
-            print("2 autovetores: \n",autovetores,"\n")
             autovaloresAux = diminuivet(autovalores)
             autovalores = vetorPrincipal(autovaloresAux, autovalores) 
             
@@ -187,33 +179,23 @@ def erros(A, n, desloc):
 
     while n_ >= 2:
         if menor == False:
-            print("iteração: ",iteracoes)
-            print("3 autovetoresAux: \n",autovetoresAux,"\n")
             Aux, autovaloresAux, autovetoresAux = QR(Aux,autovetoresAux,desloc)
             iteracoes+=1
             menor, Aux, Ai = verificaBeta(Aux)
-            print("3 autovetoresAux: \n",autovetoresAux,"\n")
 
         if menor == True:
             if n_> 2:
-                print("iteração: ",iteracoes)
                 autovetoresAux = diminui(autovetoresAux)
-                print("4 autovetoresAux: \n",autovetoresAux,"\n")
                 autovaloresAux = diminuivet(autovaloresAux)
                 n_ -= 1
                 autovetores = matrizPrincipal(autovetoresAux,autovetores)
-                print("4 autovetores: \n",autovetores,"\n")
                 autovalores = vetorPrincipal(autovaloresAux, autovalores)
                 A = matrizPrincipal(Ai,A)
                 Aux, autovaloresAux, autovetoresAux = QR(Aux,autovetoresAux,desloc)
                 iteracoes+=1
-                print("4 autovetoresAux: \n",autovetoresAux,"\n")
                 menor, Aux, Ai = verificaBeta(Aux)
-                print("menor: ",menor,"\n")
             else:
-                print("iteração: ",iteracoes)
                 autovetores = matrizPrincipal(autovetoresAux,autovetores)
-                print("5 autovetores: \n",autovetores,"\n")
                 autovalores = vetorPrincipal(autovaloresAux, autovalores)
                 n_-=1
                 
