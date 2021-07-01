@@ -68,20 +68,20 @@ def ajuste(A, i, j, k, ck, sk):
         lp -= 1
     return A, i-1, k
 
-def sgn(d):
+def sgn(d): # Ajuste do sinal
     if d >= 0:
         return 1
     else:
         return -1
     
-def heuristicaWilkinson(alfan_1, alfan, betan_1, desloc):
+def heuristicaWilkinson(alfan_1, alfan, betan_1, desloc): # heurística de Wilkinson
     if desloc == 's':
         dk = (alfan_1 - alfan)/2
         mik = alfan + dk - sgn(dk) * math.sqrt(dk**2 + betan_1**2)
         return mik
     return 0
 
-def deslocamento(mik,n):
+def deslocamento(mik,n): # matriz deslocamento
     return mik * identidade(n)
     
 def QR(A, Vi, desloc):
@@ -107,20 +107,20 @@ def QR(A, Vi, desloc):
     autovalores = autovalor(Ak)
     return Ak, autovalores, autovetores
 
-def diminui(A):
+def diminui(A): # diminui a ordem da matriz em 1. ex: A -> n x n ; Anova -> n-1 x n-1
     Anova = identidade(len(A)-1)
     for i in range(len(A)-1):
         for j in range (len(A)-1):
             Anova[i][j] = A[i][j]
     return Anova
 
-def diminuivet(A):
+def diminuivet(A): # diminui o tamanho do vetor em 1. ex A -> n ; Anova -> n-1
     Anova = np.array([])
     for i in range(len(A)-1):
         Anova = np.append(Anova,A[i])
     return Anova
 
-def verificaBeta(A):
+def verificaBeta(A): # verifica o beta menos 1 da matriz parametro
     if abs(A[len(A)-1][len(A)-2]) < 1e-6:
         #print("beta_: ",A[len(A)-1][len(A)-2])
         Aux = diminui(A)
@@ -130,18 +130,18 @@ def verificaBeta(A):
         menor = False
         return menor, A, A
 
-def matrizPrincipal(Anova, Amain):
+def matrizPrincipal(Anova, Amain): # Atualiza a matriz principal com as matrizes auxiliares diminuidas
     for i in range(len(Anova)):
         for j in range(len(Anova[0])):
             Amain[i][j] = Anova[i][j]
     return Amain
 
-def vetorPrincipal(Anova, Amain):
+def vetorPrincipal(Anova, Amain): # Atualiza o vetor principal com os vetores auxiliares diminuidos
     for i in range(len(Anova)):
         Amain[i] = Anova[i]
     return Amain
 
-def calculosAnaliticos(n):
+def calculosAnaliticos(n): # Realiza o calculo analítico dos autovalores e autovetores
     lambdavec = []
     vj = identidade(n)
     for j in range(-n,0):
@@ -152,7 +152,7 @@ def calculosAnaliticos(n):
             vj[i][j] = math.sin(abs(i+1)*abs(j+1)*math.pi/(n+1)) # Auto-vetores analiticos
     return lambdavec, vj
 
-def ordemAutovetores(autovetores):
+def ordemAutovetores(autovetores): # Altera a ordem dos autovetores para estarem de acordo com a ordem dos autovalores
     n = len(autovetores)
     matrizAux = identidade(n)
     for i in range(n):
@@ -215,7 +215,7 @@ def erros(A, desloc):
                 
     return iteracoes, autovalores, autovetores
 
-def normalizacao(autovetores):
+def normalizacao(autovetores): # Normaliza a matriz parametro
     normalizado = 0
     normas = np.array([])
     for j in range(len(autovetores)):
@@ -236,7 +236,7 @@ def normalizacao(autovetores):
 #                                   item a
 # ------------------------------------------------------------------------- #
 
-def tar1(n,desloc):
+def tar1(n,desloc): 
     alfak = 2
     betak = -1
     A = identidade(n)
@@ -260,12 +260,16 @@ def tar1(n,desloc):
 # ------------------------------------------------------------------------- #
 #                                   item b
 # ------------------------------------------------------------------------- #
-def ki(i):
+def ki(i): # equação de ki do item b
     ki = 40 + 2*i
     return ki
 
-def matrizki():
-    ks = identidade(5)
+def matrizki(escolha): # Cria a matriz dos k's do item b
+    if escolha == 2:
+        m = 5
+    elif escolha == 3:
+        m = 10
+    ks = identidade(m)
     for i in range(len(ks)):
         for j in range(len(ks[0])):
             if j == i:
@@ -304,8 +308,8 @@ def plotar_massas(Xt):
         axs[i].legend(str(i + 1),loc='upper right')
     plt.show()
 
-def tar2():
-    A = (1/2) * matrizki()
+def tar2(escolha):
+    A = (1/2) * matrizki(escolha)
     iteracoes, Y , X = erros(A,'s')
     #iteracoes, autovalores, X = erros(X,-3,'s')
     #iteracoes, autovalores, X = erros(X,-1,'s')
@@ -315,7 +319,6 @@ def tar2():
     print(X)
     a = matrizAutovalores(Y)
     print(a)
-    n = len(Y)
     #print(tempo()) 
 
 
@@ -338,16 +341,16 @@ def main():
     print("2 - item b")
     print("3 - item c")
     escolha = int(input("Escolha qual item do exercício programa: "))
-    if escolha == 1:
+    if escolha == 1: # item a
         desloc = str(input("Com deslocamento (s/n): "))
         n = int(input("Escolha o tamanho n da matriz simétrica desejada: "))
         print("\n")
         print("Os resultados obtidos foram: \n")
         tar1(n,desloc)
-    if escolha == 2:
+    if escolha == 2: # item b
         #m = int(input("Massa: "))
         print("\n")
         print("Os resultados obtidos foram: \n")
-        tar2()
+        tar2(escolha)
         
 main()
