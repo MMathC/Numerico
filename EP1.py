@@ -103,6 +103,7 @@ def rotGivens(A, Vi, desloc):
         R = Qr@R
         Qr = identidade(n)
     autovetores = Vi @ Q_ts
+    print("autovetores: \n",autovetores,"\n")
     Ak = (R @ Q_ts) + deslocamento(mik * identidade(n),n)
     autovalores = autovalor(Ak)
     return Ak, autovalores, autovetores
@@ -120,6 +121,14 @@ def diminuivet(A): # diminui o tamanho do vetor em 1. ex A -> n ; Anova -> n-1
         Anova = np.append(Anova,A[i])
     return Anova
 
+def tiraColuna(A):
+    Anova = []
+    for i in range(len(A)):
+        Anova.append([])
+        for j in range(len(A[0])-1):
+            Anova[i].append(A[i][j])
+    return np.array(Anova)
+
 def verificaBeta(A): # verifica o beta menos 1 da matriz parametro
     if abs(A[len(A)-1][len(A)-2]) < 1e-6:
         #print("beta_: ",A[len(A)-1][len(A)-2])
@@ -131,9 +140,14 @@ def verificaBeta(A): # verifica o beta menos 1 da matriz parametro
         return menor, A, A
 
 def matrizPrincipal(Anova, Amain): # Atualiza a matriz principal com as matrizes auxiliares diminuidas
-    for i in range(len(Anova)):
-        for j in range(len(Anova[0])):
-            Amain[i][j] = Anova[i][j]
+    if len(Anova)==len(Anova[len(Anova)-1]):
+        for i in range(len(Anova)):
+            for j in range(len(Anova[0])):
+                Amain[i][j] = Anova[i][j]
+    else:
+        for i in range(len(Anova)):
+            for j in range(len(Anova[len(Anova)-1])):
+                Amain[i][j] = Anova[i][j]
     return Amain
 
 def vetorPrincipal(Anova, Amain): # Atualiza o vetor principal com os vetores auxiliares diminuidos
@@ -175,8 +189,9 @@ def QR(A, desloc):
         menor, Aux, A = verificaBeta(Aux)
         if menor == True:
             n_-= 1
-            autovetoresAux = diminui(autovetores)
+            autovetoresAux = tiraColuna(autovetores)
             autovetores = matrizPrincipal(autovetoresAux,autovetores)
+            print("autovetores inside 1: \n",autovetores,"\n")
             autovaloresAux = diminuivet(autovalores)
             autovalores = vetorPrincipal(autovaloresAux, autovalores) 
             
@@ -190,17 +205,20 @@ def QR(A, desloc):
             Aux, autovaloresAux, autovetoresAux = rotGivens(Aux,autovetoresAux,desloc)
             iteracoes+=1
             menor, Aux, Ai = verificaBeta(Aux)
+            print("autovetoresAux inside: \n",autovetoresAux,"\n")
 
         if menor == True:
             if n_> 2:
+                autovetores = matrizPrincipal(autovetoresAux,autovetores)
                 autovalores = vetorPrincipal(autovaloresAux, autovalores)
                 #print("autovalores: \n",autovalores,"\n")
-                autovetoresAux = diminui(autovetoresAux)
+                autovetoresAux = tiraColuna(autovetoresAux)
                 #print("autovaloresAux: \n",autovaloresAux,"\n")
                 #print("autovetores: \n",autovetores,"\n")
                 autovaloresAux = diminuivet(autovaloresAux)
                 #print("autovetoresAux:\n ",autovetoresAux,"\n")
                 autovetores = matrizPrincipal(autovetoresAux,autovetores)
+                print("autovetores inside 2: \n",autovetores,"\n")
                 n_ -= 1
                 #autovetores = matrizPrincipal(autovetoresAux,autovetores)
                 #autovalores = vetorPrincipal(autovaloresAux, autovalores)
@@ -211,9 +229,10 @@ def QR(A, desloc):
             else:
                 A = matrizPrincipal(Ai,A)
                 autovetores = matrizPrincipal(autovetoresAux,autovetores)
+                print("autovetores inside 3: \n",autovetores,"\n")
                 autovalores = vetorPrincipal(autovaloresAux, autovalores)
                 n_-=1
-                
+    print("autovetores: \n",autovetores,"\n")
     return iteracoes, autovalores, autovetores, A
 
 def normalizacao(autovetores): # Normaliza a matriz parametro
@@ -451,12 +470,13 @@ def main():
         print("Os resultados obtidos foram: \n")
         tar2(escolha,n2,dt,tmax)
     if escolha == 3:
-        print("1) X(0) = −2, −3, −1, −3, −1")
-        print("2) X(0) = 1, 10, −4, 3, −2")
+        print("1) X(0) = −2, −3, −1, −3, −1, −2, −3, −1, −3, −1")
+        print("2) X(0) = 1, 10, −4, 3, −2, 1, 10, −4, 3, −2")
         print("3) X(0) correspondente ao modo de maior frequência")
         n3 = int(input("Escolha a condição inicial: "))
         tmax = float(input("Escolha o tempo maximo:(sugerido 10s)\n"))
         dt = float(input("Escolha o passo no tempo:(sugerido 0.0025)\n"))
+        print("\n")
         print("Os resultados obtidos foram: \n")
         tar3(escolha,n3,dt,tmax)
 main()
