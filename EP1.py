@@ -103,7 +103,6 @@ def rotGivens(A, Vi, desloc):
         R = Qr@R
         Qr = identidade(n)
     autovetores = Vi @ Q_ts
-    print("autovetores: \n",autovetores,"\n")
     Ak = (R @ Q_ts) + deslocamento(mik * identidade(n),n)
     autovalores = autovalor(Ak)
     return Ak, autovalores, autovetores
@@ -191,7 +190,6 @@ def QR(A, desloc):
             n_-= 1
             autovetoresAux = tiraColuna(autovetores)
             autovetores = matrizPrincipal(autovetoresAux,autovetores)
-            print("autovetores inside 1: \n",autovetores,"\n")
             autovaloresAux = diminuivet(autovalores)
             autovalores = vetorPrincipal(autovaloresAux, autovalores) 
             
@@ -205,7 +203,6 @@ def QR(A, desloc):
             Aux, autovaloresAux, autovetoresAux = rotGivens(Aux,autovetoresAux,desloc)
             iteracoes+=1
             menor, Aux, Ai = verificaBeta(Aux)
-            print("autovetoresAux inside: \n",autovetoresAux,"\n")
 
         if menor == True:
             if n_> 2:
@@ -218,7 +215,6 @@ def QR(A, desloc):
                 autovaloresAux = diminuivet(autovaloresAux)
                 #print("autovetoresAux:\n ",autovetoresAux,"\n")
                 autovetores = matrizPrincipal(autovetoresAux,autovetores)
-                print("autovetores inside 2: \n",autovetores,"\n")
                 n_ -= 1
                 #autovetores = matrizPrincipal(autovetoresAux,autovetores)
                 #autovalores = vetorPrincipal(autovaloresAux, autovalores)
@@ -229,10 +225,17 @@ def QR(A, desloc):
             else:
                 A = matrizPrincipal(Ai,A)
                 autovetores = matrizPrincipal(autovetoresAux,autovetores)
-                print("autovetores inside 3: \n",autovetores,"\n")
                 autovalores = vetorPrincipal(autovaloresAux, autovalores)
                 n_-=1
+                
+    lambdavec, vj = calculosAnaliticos(n)
+    autovetores = ordemAutovetores(autovetores)
+    
+    print("Número de iterações: ",iteracoes,"\n")
+    print("Autovalores encontrados: \n",autovalores,"\n")
+    print("Autovalores analíticos: \n",lambdavec,"\n")
     print("autovetores: \n",autovetores,"\n")
+    print("Autovetores analíticos: \n",vj,"\n")
     return iteracoes, autovalores, autovetores, A
 
 def normalizacao(autovetores): # Normaliza a matriz parametro
@@ -263,15 +266,6 @@ def tar1(n,desloc):
             if j == i+1 or j == i-1:
                 A[i][j] = betak
     iteracoes, autovalores, autovetores, A = QR(A,desloc)
-    lambdavec, vj = calculosAnaliticos(n)
-    autovetores = ordemAutovetores(autovetores)
-    
-
-    print("Número de iterações: ",iteracoes,"\n")
-    print("Autovalores encontrados: \n",autovalores,"\n")
-    print("Autovalores analíticos: \n",lambdavec,"\n")
-    print("Autovetores encontrados: \n",autovetores,"\n")
-    print("Autovetores analíticos: \n",vj,"\n")
 
 # ------------------------------------------------------------------------- #
 #                                   item b
