@@ -178,25 +178,22 @@ def QR(A, desloc):
     Vi = identidade(n)
     A, autovalores, autovetores = rotGivens(A,Vi,'n')
     n_ = n
-    matrix, autovalores, autovetores = rotGivens(A,autovetores,desloc)
-    iteracoes = 2
-    menor, Aux, A = verificaBeta(matrix)
-
+    menor = False
+    iteracoes = 1
     while menor == False:
-        Aux, autovalores, autovetores = rotGivens(Aux,autovetores,desloc)
-        iteracoes+=1
+        Aux, autovalores, autovetores = rotGivens(A,autovetores,desloc)
+        iteracoes += 1
         menor, Aux, A = verificaBeta(Aux)
         if menor == True:
             n_-= 1
             autovetoresAux = tiraColuna(autovetores)
             autovetores = matrizPrincipal(autovetoresAux,autovetores)
             autovaloresAux = diminuivet(autovalores)
-            autovalores = vetorPrincipal(autovaloresAux, autovalores) 
-            
-            
+            autovalores = vetorPrincipal(autovaloresAux, autovalores)
+
     Aux, autovaloresAux, autovetoresAux = rotGivens(Aux,autovetoresAux,desloc)
     iteracoes+=1
-    menor, Aux, Ai = verificaBeta(Aux)
+    menor, Aux, Ai = verificaBeta(Aux)       
 
     while n_ >= 2:
         if menor == False:
