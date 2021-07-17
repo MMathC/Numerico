@@ -176,27 +176,24 @@ def ordemAutovetores(autovetores): # Altera a ordem dos autovetores para estarem
             matrizAux[i][j] = autovetores[i][((-j)-1)]
     return matrizAux
     
-def QR(A, desloc):
+def QR(A, HT,desloc):
     n = len(A)
-    Vi = identidade(n)
+    Vi = HT
     A, autovalores, autovetores = rotGivens(A,Vi,'n')
     n_ = n
-    matrix, autovalores, autovetores = rotGivens(A,autovetores,desloc)
-    iteracoes = 2
-    menor, Aux, A = verificaBeta(matrix)
-
+    menor = False
+    iteracoes = 1
     while menor == False:
-        Aux, autovalores, autovetores = rotGivens(Aux,autovetores,desloc)
-        iteracoes+=1
+        Aux, autovalores, autovetores = rotGivens(A,autovetores,desloc)
+        iteracoes += 1
         menor, Aux, A = verificaBeta(Aux)
         if menor == True:
             n_-= 1
             autovetoresAux = tiraColuna(autovetores)
             autovetores = matrizPrincipal(autovetoresAux,autovetores)
             autovaloresAux = diminuivet(autovalores)
-            autovalores = vetorPrincipal(autovaloresAux, autovalores) 
-            
-            
+            autovalores = vetorPrincipal(autovaloresAux, autovalores)
+
     Aux, autovaloresAux, autovetoresAux = rotGivens(Aux,autovetoresAux,desloc)
     iteracoes+=1
     menor, Aux, Ai = verificaBeta(Aux)
@@ -276,13 +273,9 @@ def wBarra(an):
         wbarra.append([wbarraT[i]])
     return np.array(wbarra)
 
-def produtoVetorial(a,b):
-    produto = a@b
-    return produto
-
 def Hw(wbarra,n):
     I = identidade(len(wbarra))
-    Hwi = I - 2*produtoVetorial(wbarra,wbarra.T)/normaAoQuadrado(wbarra)
+    Hwi = I - 2*(wbarra@wbarra.T)/normaAoQuadrado(wbarra)
     Hw = identidade(n)
     diferenca = n - len(wbarra)
     for i in range(n):
@@ -313,21 +306,17 @@ def arrumaZeros(A):
 def TransformacaoHouseholder(A):
     n = len(A)
     Hw1 = Hw(wBarra(a(A,0)),n)
-    print("Hw1: \n",Hw1,"\n")
     HT = Hw1
     i = n-1
     while i > 2:
         H = Hw1@A@Hw1
-        print("H: \n",arrumaZeros(H),"\n")
-        print("a: \n",a(H,1),"\n")
         Hwn = Hw(wBarra(a(H,1)),n)
-        print(Hwn,"\n")
         H = Hwn@H@Hwn
         HT = HT@Hwn
         i-=1
     H = arrumaZeros(H)
-    print("H: \n",H,"\n")
-    print("HT: \n",HT,"\n")
+    print("H: \n",H)
+    print("HT: \n",HT)
     return H, HT
     
 # ------------------------------------------------------------------------- #
@@ -337,6 +326,14 @@ def TransformacaoHouseholder(A):
 def tar1(): 
     A = np.array([[2,4,1,1],[4,2,1,1],[1,1,1,2],[1,1,2,1]])
     H, HT = TransformacaoHouseholder(A)
-    iteracoes, autovalores, autovetores, A = QR(A,'s')
+    iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+    ident = identidade(len(autovalores))
+    
+    for i in range(len(ident)):
+        for j in range(len(ident[0])):
+            if ident[i][j] == 1:
+                ident[i][j] = autovalores[i]
+                
+    print("T: \n",autovetores@ident@autovetores.T)
 
 
