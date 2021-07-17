@@ -318,6 +318,14 @@ def TransformacaoHouseholder(A):
     print("H: \n",H)
     print("HT: \n",HT)
     return H, HT
+
+def matrizAutovalores(autovalores):
+    ident = identidade(len(autovalores))
+    for i in range(len(ident)):
+        for j in range(len(ident[0])):
+            if ident[i][j] == 1:
+                ident[i][j] = autovalores[i]
+    return ident
     
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
@@ -327,14 +335,8 @@ def tar1():
     A = np.array([[2,4,1,1],[4,2,1,1],[1,1,1,2],[1,1,2,1]])
     H, HT = TransformacaoHouseholder(A)
     iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
-    ident = identidade(len(autovalores))
-    
-    for i in range(len(ident)):
-        for j in range(len(ident[0])):
-            if ident[i][j] == 1:
-                ident[i][j] = autovalores[i]
-    print("autoval: \n",ident,"\n")
+    autovalores = matrizAutovalores(autovalores)
     autovetores = ordemAutovetores(autovetores)
-    print("T: \n",autovetores@ident@autovetores.T)
+    print("T: \n",autovetores@autovalores@autovetores.T)
 
 
