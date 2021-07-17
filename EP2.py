@@ -333,7 +333,8 @@ def tar1():
         for j in range(len(ident[0])):
             if ident[i][j] == 1:
                 ident[i][j] = autovalores[i]
-                
+    print("autoval: \n",ident,"\n")
+    autovetores = ordemAutovetores(autovetores)
     print("T: \n",autovetores@ident@autovetores.T)
 
 
