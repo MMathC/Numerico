@@ -339,6 +339,18 @@ def LerArquivo(nome):
             line+=1
         A = np.array(newList)
     return A
+
+def EscreverArquivo(A):
+    nome = str(input("nome do arquivo: "))
+    with open(nome,'w') as arq:
+        for i in range(len(A)):
+            for j in range(len(A[i])):
+                if j == len(A[i])-1:
+                    arq.write(str(A[i][j]))
+                else:
+                    arq.write(str(A[i][j])+" ")
+            arq.write("\n")
+    arq.close()
     
 def AutovaloresAnaliticos():
     lambdai = []
@@ -364,12 +376,14 @@ def tarefa1(escolha):
         print(A)
         H, HT = TransformacaoHouseholder(A)
         iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
-        autovalores = matrizAutovalores(AutovaloresAnaliticos())
+        autovalores = matrizAutovalores(autovalores)
         print(AutovaloresAnaliticos())
         autovetores = ordemAutovetores(autovetores)
-        print("T: \n",autovetores@autovalores@autovetores.T,"\n")
-
-
+        T = autovetores@autovalores@autovetores.T
+        print("T: \n",T,"\n")
+        EscreverArquivo(np.round(T,0))
+        
+        
 def main():
     print("1) Testes")
     print("2) Aplicações: Treliças Planas")
@@ -381,7 +395,5 @@ def main():
         print("\nresultados obtidos foram: \n")
         tarefa1(testes)
         
-
-
                     
 main()
