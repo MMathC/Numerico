@@ -243,8 +243,6 @@ def normalizacao(autovetores): # Normaliza a matriz parametro
         autovetores[i]=autovetores[i]/(soma)**(1/2)
     return autovetores
 
-
-
 # ------------------------------------------------------------------------- #
 #                                   EP2 
 # ------------------------------------------------------------------------- #
@@ -315,8 +313,8 @@ def TransformacaoHouseholder(A):
         HT = HT@Hwn
         i-=1
     H = arrumaZeros(H)
-    print("H: \n",H)
-    print("HT: \n",HT)
+    print("H: \n",H,"\n")
+    print("HT: \n",HT,"\n")
     return H, HT
 
 def matrizAutovalores(autovalores):
@@ -326,17 +324,64 @@ def matrizAutovalores(autovalores):
             if ident[i][j] == 1:
                 ident[i][j] = autovalores[i]
     return ident
+
+def LerArquivo(nome):
+    with open(nome,'r') as arq:
+        content = arq.readlines()
+        tamanho = int(content[0])
+        newList = []
+        line = 0
+        for i in range(1,tamanho+1):
+            newList.append([])
+            linhas = content[i].split()
+            for j in range(tamanho):
+                newList[line].append(int(linhas[j]))
+            line+=1
+        A = np.array(newList)
+    return A
     
+def AutovaloresAnaliticos():
+    lambdai = []
+    n = 20
+    for i in range(1,n+1):
+        autoval = 1/(2*(1-(math.cos(math.pi*(2*i - 1)/(2*n + 1)))))
+        lambdai.append(autoval)
+    return lambdai
 # ------------------------------------------------------------------------- #
 #                                   Tarefa 
 # ------------------------------------------------------------------------- #
 
-def tar1(): 
-    A = np.array([[2,4,1,1],[4,2,1,1],[1,1,1,2],[1,1,2,1]])
-    H, HT = TransformacaoHouseholder(A)
-    iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
-    autovalores = matrizAutovalores(autovalores)
-    autovetores = ordemAutovetores(autovetores)
-    print("T: \n",autovetores@autovalores@autovetores.T)
+def tarefa1(escolha):
+    if escolha == 1:
+        A = LerArquivo("input-a")
+        H, HT = TransformacaoHouseholder(A)
+        iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+        autovalores = matrizAutovalores(autovalores)
+        autovetores = ordemAutovetores(autovetores)
+        print("T: \n",autovetores@autovalores@autovetores.T,"\n")
+    elif escolha == 2:
+        A = LerArquivo("input-b")
+        print(A)
+        H, HT = TransformacaoHouseholder(A)
+        iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+        autovalores = matrizAutovalores(AutovaloresAnaliticos())
+        print(AutovaloresAnaliticos())
+        autovetores = ordemAutovetores(autovetores)
+        print("T: \n",autovetores@autovalores@autovetores.T,"\n")
 
 
+def main():
+    print("1) Testes")
+    print("2) Aplicações: Treliças Planas")
+    escolha = int(input("Escolha qual item do exercício programa: "))
+    if escolha == 1:
+        print("1) Teste a")
+        print("2) Teste b")
+        testes = int(input("Escolha qual item dos testes: "))
+        print("\nresultados obtidos foram: \n")
+        tarefa1(testes)
+        
+
+
+                    
+main()
