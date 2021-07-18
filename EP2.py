@@ -231,8 +231,8 @@ def QR(A, HT,desloc):
     autovetores = ordemAutovetores(autovetores)
     
     print("Número de iterações: ",iteracoes,"\n")
+    print("autovetores: \n",np.round(autovetores,7),"\n")
     print("Autovalores encontrados: \n",autovalores,"\n")
-    print("autovetores: \n",autovetores,"\n")
     return iteracoes, autovalores, autovetores, A
 
 def normalizacao(autovetores): # Normaliza a matriz parametro
@@ -318,7 +318,7 @@ def TransformacaoHouseholder(A):
         iteracao+=1
     H = arrumaZeros(H)
     print("H: \n",H,"\n")
-    print("HT: \n",HT,"\n")
+    print("HT: \n",np.round(HT,7),"\n")
     return H, HT
 
 def matrizAutovalores(autovalores):
@@ -370,11 +370,12 @@ def AutovaloresAnaliticos():
 def tarefa1(escolha):
     if escolha == 1:
         A = LerArquivo("input-a")
+        print("Matriz inicial: \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
         iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
-        print(np.round(arrumaZeros(A),1))
         autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
+        print("Verificação A*v = lambda*v")
         print("T: \n",autovetores@autovalores@autovetores.T,"\n")
     elif escolha == 2:
         A = LerArquivo("input-b")
@@ -384,10 +385,12 @@ def tarefa1(escolha):
         autovalores = matrizAutovalores(autovalores)
         print("Autovalores analíticos: \n",AutovaloresAnaliticos(),"\n")
         autovetores = ordemAutovetores(autovetores)
+        #EscreverArquivo(np.round(autovetores,7)) # Caso queira gerar um arquivo com a matriz de autovetores, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         T = autovetores@autovalores@autovetores.T
+        print("Verificação A*v = lambda*v")
         print("T: \n",T,"\n")
-        #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição dos resultados, retire o primeiro hashtag dessa linha
-        #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição dos resultados, retire o primeiro hashtag dessa linha
+        #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
+        #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         
         
 def main():
@@ -400,5 +403,6 @@ def main():
         testes = int(input("Escolha qual item dos testes: "))
         print("\nresultados obtidos foram: \n")
         tarefa1(testes)
+    #elif escolha == 2:
                     
 main()
