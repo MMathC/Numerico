@@ -343,6 +343,27 @@ def LerArquivo(nome):
         A = np.array(newList)
     return A
 
+def LerArquivoC(nome):
+    with open(nome,'r') as arq:
+        content = arq.readlines()
+        primeiraLinha = content[0].split()
+        segundaLinha = content[1].split()
+        nosTotal = int(primeiraLinha[0])
+        print("Numeros de nós total: ",nosTotal)
+        nosNaoFixos = int(primeiraLinha[1])
+        print("Número de nós não fixos: ",nosNaoFixos)
+        numBarras = int(primeiraLinha[2])
+        print("Número de barras: ",numBarras)
+        ro = float(segundaLinha[0])
+        print("Ro",ro)
+        area = float(segundaLinha[1])
+        print("A: ",area)
+        E = float(segundaLinha[2])
+        print("E: ",E)
+        
+            
+        
+
 def EscreverArquivo(A):
     nome = str(input("nome do arquivo: "))
     with open(nome,'w') as arq:
@@ -362,8 +383,32 @@ def AutovaloresAnaliticos():
         autoval = 1/(2*(1-(math.cos(math.pi*(2*i - 1)/(2*n + 1)))))
         lambdai.append(autoval)
     return lambdai
+
+def matrizIndefinida(i,j):
+    K = [[],[],[],[]]
+    K[0][0] = [2*i-1, 2*i-1]
+    K[1][0] = [2*i, 2*i-1]
+    K[2][0] = [2*j-1, 2*i-1] 
+    K[3][0] = [2*j, 2*i-1]
+    K[0][1] = [2*i-1, 2*i]
+    K[1][1] = [2*i, 2*i]
+    K[2][1] = [2*j-1, 2*i]
+    K[3][1] = [2*j, 2*i]
+    K[0][2] = [2*i-1, 2*j-1]
+    K[1][2] = [2*i, 2*j-1]
+    K[2][2] = [2*j-1, 2*j-1]
+    K[3][2] = [2*j, 2*j-1]
+    K[0][3] = [2*i-1, 2*j]
+    K[1][3] = [2*i, 2*j]
+    K[2][3] = [2*j-1, 2*j]
+    K[3][3] = [2*j, 2*j]
+    
+    return K
+    
+    
+    
 # ------------------------------------------------------------------------- #
-#                                   Tarefa 
+#                  ]                 Tarefa 
 # ------------------------------------------------------------------------- #
 
 def tarefa1(escolha):
@@ -403,6 +448,7 @@ def main():
         testes = int(input("Escolha qual item dos testes: "))
         print("\nresultados obtidos foram: \n")
         tarefa1(testes)
-    #elif escolha == 2:
-                    
+    elif escolha == 2:
+        print("\nresultados obtidos foram: \n")
+        LerArquivoC('input-c')                
 main()
