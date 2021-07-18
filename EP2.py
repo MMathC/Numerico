@@ -303,15 +303,19 @@ def arrumaZeros(A):
 
 def TransformacaoHouseholder(A):
     n = len(A)
-    Hw1 = Hw(wBarra(a(A,0)),n)
+    #print("n: ",n)
+    iteracao = 0
+    Hw1 = Hw(wBarra(a(A,iteracao)),n)
+    iteracao+=1
     HT = Hw1
     i = n-1
-    while i > 2:
-        H = Hw1@A@Hw1
-        Hwn = Hw(wBarra(a(H,1)),n)
+    H = Hw1@A@Hw1
+    while i > 1:
+        Hwn = Hw(wBarra(a(H,iteracao)),n)
         H = Hwn@H@Hwn
         HT = HT@Hwn
         i-=1
+        iteracao+=1
     H = arrumaZeros(H)
     print("H: \n",H,"\n")
     print("HT: \n",HT,"\n")
@@ -368,6 +372,7 @@ def tarefa1(escolha):
         A = LerArquivo("input-a")
         H, HT = TransformacaoHouseholder(A)
         iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+        print(np.round(arrumaZeros(A),1))
         autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
         print("T: \n",autovetores@autovalores@autovetores.T,"\n")
@@ -377,10 +382,11 @@ def tarefa1(escolha):
         H, HT = TransformacaoHouseholder(A)
         iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
         autovalores = matrizAutovalores(autovalores)
-        print(AutovaloresAnaliticos())
+        print("Autovalores analíticos: \n",AutovaloresAnaliticos(),"\n")
         autovetores = ordemAutovetores(autovetores)
         T = autovetores@autovalores@autovetores.T
         print("T: \n",T,"\n")
+        EscreverArquivo(np.round(H,2))
         EscreverArquivo(np.round(T,0))
         
         
@@ -394,6 +400,5 @@ def main():
         testes = int(input("Escolha qual item dos testes: "))
         print("\nresultados obtidos foram: \n")
         tarefa1(testes)
-        
                     
 main()
