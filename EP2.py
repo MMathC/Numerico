@@ -303,7 +303,6 @@ def arrumaZeros(A):
 
 def TransformacaoHouseholder(A):
     n = len(A)
-    #print("n: ",n)
     iteracao = 0
     Hw1 = Hw(wBarra(a(A,iteracao)),n)
     iteracao+=1
@@ -375,6 +374,7 @@ def tarefa1(escolha):
         iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
         autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
+        print("Autovetores normalizados: \n",np.round(normalizacao(autovetores),7),"\n")
         print("Verificação A*v = lambda*v")
         print("T: \n",autovetores@autovalores@autovetores.T,"\n")
     elif escolha == 2:
