@@ -386,8 +386,8 @@ def tarefa1(escolha):
         autovetores = ordemAutovetores(autovetores)
         T = autovetores@autovalores@autovetores.T
         print("T: \n",T,"\n")
-        EscreverArquivo(np.round(H,2))
-        EscreverArquivo(np.round(T,0))
+        #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição dos resultados, retire o primeiro hashtag dessa linha
+        #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição dos resultados, retire o primeiro hashtag dessa linha
         
         
 def main():
