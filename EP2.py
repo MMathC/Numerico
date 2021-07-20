@@ -232,7 +232,6 @@ def QR(A, HT,desloc):
     autovetores = ordemAutovetores(autovetores)
     
     print("Número de iterações: ",iteracoes,"\n")
-    print("autovetores: \n",np.round(autovetores,7),"\n")
     print("Autovalores encontrados: \n",autovalores,"\n")
     return iteracoes, autovalores, autovetores, A
 
@@ -298,7 +297,7 @@ def a(A,k):
 def arrumaZeros(A):
     for i in range(len(A)):
         for j in range(len(A[0])):
-            if abs(A[i][j]) < 1e-10:
+            if abs(A[i][j]) < 1e-8:
                 A[i][j] = 0
     return A
 
@@ -317,7 +316,7 @@ def TransformacaoHouseholder(A):
         i-=1
         iteracao+=1
     H = arrumaZeros(H)
-    print("H: \n",H,"\n")
+    print("H: \n",np.round(H,1),"\n")
     print("HT: \n",np.round(HT,7),"\n")
     return H, HT
 
@@ -452,7 +451,24 @@ def MatrizDeRigidez(i,j,k,K):
         K[2*j-1, 2*j]+=k[2][3]
         K[2*j, 2*j]+=k[3][3]
     return np.array(K)
-    
+
+def ArrumaZerrosVetor(vetor):
+    newList = np.array([])
+    for i in range(len(vetor)):
+        if abs(vetor[i]) < 1e-6:
+            newList = np.append(newList,0)
+        else:
+            newList = np.append(newList,vetor[i])
+    return newList
+
+def Verifica(A,autovetores,autovalores):
+    newList = np.array([])
+    for i in range(len(autovalores)):
+        for j in range(len(autovalores)):
+            newList = np.append(newList,autovetores[j][i]) 
+        print("Av: \n",ArrumaZerrosVetor(A@newList),"\n")
+        print("lambdav: \n",autovalores[i]*newList,"\n")
+        newList = np.array([])
     
     
 # ------------------------------------------------------------------------- #
@@ -462,29 +478,31 @@ def MatrizDeRigidez(i,j,k,K):
 def tarefa1(escolha):
     if escolha == 1:
         A = LerArquivo("input-a")
-        print("Matriz inicial: \n",A,"\n")
+        print("Matriz de entrada: \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
-        iteracoes, autovalores, autovetores, Anova = QR(H,HT,'s')
+        iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
         autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
+        Verifica(A,autovetores,autovalores)
+        print("autovetores: \n",np.round(autovetores,7),"\n")
         print("Autovetores normalizados: \n",np.round(normalizacao(autovetores),7),"\n")
-        print("Verificação A*v = lambda*v")
-        print("T: \n",autovetores@autovalores@autovetores.T,"\n")
-        print("Av: \n",A@autovetores,"\n")
+        #print("Verificação A*v = lambda*v")
+        print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
+        print("Matriz inicial: \n",A,"\n")
+        #print("Av: \n",arrumaZeros(A@autovetores),"\n")
         #autovalores = np.array([[7,0,0,0],[0,2,0,0],[0,0,-1,0],[0,0,0,-2]])
-        print("lambdav: \n",(autovalores@autovetores).T,"\n")
+        #print("lambdav: \n",arrumaZeros((autovalores@autovetores).T),"\n")
     elif escolha == 2:
         A = LerArquivo("input-b")
-        print(A)
+        print("Matriz de entrada: \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
-        iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+        iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
         autovalores = matrizAutovalores(autovalores)
         print("Autovalores analíticos: \n",AutovaloresAnaliticos(),"\n")
         autovetores = ordemAutovetores(autovetores)
         #EscreverArquivo(np.round(autovetores,7)) # Caso queira gerar um arquivo com a matriz de autovetores, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
-        T = autovetores@autovalores@autovetores.T
         print("Verificação A*v = lambda*v")
-        print("T: \n",T,"\n")
+        print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
         #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         
