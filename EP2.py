@@ -104,6 +104,7 @@ def rotGivens(A, Vi, desloc):
         Qr, auxi, auxj = ajuste(Qr, auxi, auxi+1, auxj, ck, sk)
         Q_ts = Q_ts @ Qr.T
         R = Qr@R
+        #print("n: ",n)
         Qr = identidade(n)
     autovetores = Vi @ Q_ts
     Ak = (R @ Q_ts) + deslocamento(mik * identidade(n),n)
@@ -231,7 +232,6 @@ def QR(A, HT,desloc):
     autovetores = ordemAutovetores(autovetores)
     
     print("Número de iterações: ",iteracoes,"\n")
-    print("autovetores: \n",np.round(autovetores,7),"\n")
     print("Autovalores encontrados: \n",autovalores,"\n")
     return iteracoes, autovalores, autovetores, A
 
@@ -297,7 +297,7 @@ def a(A,k):
 def arrumaZeros(A):
     for i in range(len(A)):
         for j in range(len(A[0])):
-            if abs(A[i][j]) < 1e-10:
+            if abs(A[i][j]) < 1e-8:
                 A[i][j] = 0
     return A
 
@@ -309,14 +309,14 @@ def TransformacaoHouseholder(A):
     HT = Hw1
     i = n-1
     H = Hw1@A@Hw1
-    while i > 1:
+    while i > 2:
         Hwn = Hw(wBarra(a(H,iteracao)),n)
         H = Hwn@H@Hwn
         HT = HT@Hwn
         i-=1
         iteracao+=1
     H = arrumaZeros(H)
-    print("H: \n",H,"\n")
+    print("H: \n",np.round(H,1),"\n")
     print("HT: \n",np.round(HT,7),"\n")
     return H, HT
 
@@ -360,9 +360,32 @@ def LerArquivoC(nome):
         print("A: ",area)
         E = float(segundaLinha[2])
         print("E: ",E)
-        
+        line = 0
+        K = MatrizZerada(24)
+        for linha in range(2,29):
+            linhas = content[linha].split()
+            for coluna in range(4):
+                if coluna == 0:
+                    i = int(linhas[coluna])
+                    print("i1: ",i)
+                elif coluna == 1:
+                    j = int(linhas[coluna])
+                    print("j1: ",j)
+                elif coluna == 2:
+                    angle = float(linhas[coluna])
+                    print("angulo: ",deg2rad(angle))
+                else:
+                    L = float(linhas[coluna])
+                    print("L1: ",L)
+            k = MatrizDeRigidezIntermediaria(area,E,L,deg2rad(angle))
+            print(k)
+            K = MatrizDeRigidez(i,j,k,K)
+            line+=1
+        EscreverArquivo(np.round(K,3))
+        return K
             
-        
+def deg2rad(angle):
+    return angle*math.pi/180
 
 def EscreverArquivo(A):
     nome = str(input("nome do arquivo: "))
@@ -384,27 +407,68 @@ def AutovaloresAnaliticos():
         lambdai.append(autoval)
     return lambdai
 
-def matrizIndefinida(i,j):
-    K = [[],[],[],[]]
-    K[0][0] = [2*i-1, 2*i-1]
-    K[1][0] = [2*i, 2*i-1]
-    K[2][0] = [2*j-1, 2*i-1] 
-    K[3][0] = [2*j, 2*i-1]
-    K[0][1] = [2*i-1, 2*i]
-    K[1][1] = [2*i, 2*i]
-    K[2][1] = [2*j-1, 2*i]
-    K[3][1] = [2*j, 2*i]
-    K[0][2] = [2*i-1, 2*j-1]
-    K[1][2] = [2*i, 2*j-1]
-    K[2][2] = [2*j-1, 2*j-1]
-    K[3][2] = [2*j, 2*j-1]
-    K[0][3] = [2*i-1, 2*j]
-    K[1][3] = [2*i, 2*j]
-    K[2][3] = [2*j-1, 2*j]
-    K[3][3] = [2*j, 2*j]
-    
+def MatrizDeRigidezIntermediaria(area,E,L,angle):
+    C = math.cos(angle)
+    S = math.sin(angle)
+    K = []
+    K.append([C**2,C*S,-C**2,-C*S])
+    K.append([C*S,S**2,-C*S,-S**2])
+    K.append([-C**2,-C*S,C**2,C*S])
+    K.append([-C*S,-S**2,C*S,S**2])
+    K = np.array(K)
+    print("k: \n",K,"\n")
+    print("Area: ",area)
+    print("E: ",E)
+    print("L: ",L)
+    print("angle: ",angle)
+    return np.array((area*E/L)*K)
+
+def MatrizZerada(n):
+    K = identidade(n)
+    for i in range(len(K)):
+        for j in range(len(K)):
+            if i == j:
+                K[i][j] = 0
     return K
     
+def MatrizDeRigidez(i,j,k,K):
+    print("i: ",i," j: ",j)
+    if (2*i) < 24 and (2*j) < 24:
+        K[2*i-1, 2*i-1]+=k[0][0]
+        K[2*i, 2*i-1]+=k[1][0]
+        K[2*j-1, 2*i-1]+=k[2][0]
+        K[2*j, 2*i-1]+=k[3][0]
+        K[2*i-1, 2*i]+=k[0][1]
+        K[2*i, 2*i]+=k[1][1]
+        K[2*j-1, 2*i]+=k[2][1]
+        K[2*j, 2*i]+=k[3][1]
+        K[2*i-1, 2*j-1]+=k[0][2]
+        K[2*i, 2*j-1]+=k[1][2]
+        K[2*j-1, 2*j-1]+=k[2][2]
+        K[2*j, 2*j-1]+=k[3][2]
+        K[2*i-1, 2*j]+=k[0][3]
+        K[2*i, 2*j]+=k[1][3]
+        K[2*j-1, 2*j]+=k[2][3]
+        K[2*j, 2*j]+=k[3][3]
+    return np.array(K)
+
+def ArrumaZerrosVetor(vetor):
+    newList = np.array([])
+    for i in range(len(vetor)):
+        if abs(vetor[i]) < 1e-6:
+            newList = np.append(newList,0)
+        else:
+            newList = np.append(newList,vetor[i])
+    return newList
+
+def Verifica(A,autovetores,autovalores):
+    newList = np.array([])
+    for i in range(len(autovalores)):
+        for j in range(len(autovalores)):
+            newList = np.append(newList,autovetores[j][i]) 
+        print("Av: \n",ArrumaZerrosVetor(A@newList),"\n")
+        print("lambdav: \n",autovalores[i]*newList,"\n")
+        newList = np.array([])
     
     
 # ------------------------------------------------------------------------- #
@@ -414,26 +478,31 @@ def matrizIndefinida(i,j):
 def tarefa1(escolha):
     if escolha == 1:
         A = LerArquivo("input-a")
-        print("Matriz inicial: \n",A,"\n")
+        print("Matriz de entrada: \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
-        iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+        iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
         autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
+        Verifica(A,autovetores,autovalores)
+        print("autovetores: \n",np.round(autovetores,7),"\n")
         print("Autovetores normalizados: \n",np.round(normalizacao(autovetores),7),"\n")
-        print("Verificação A*v = lambda*v")
-        print("T: \n",autovetores@autovalores@autovetores.T,"\n")
+        #print("Verificação A*v = lambda*v")
+        print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
+        print("Matriz inicial: \n",A,"\n")
+        #print("Av: \n",arrumaZeros(A@autovetores),"\n")
+        #autovalores = np.array([[7,0,0,0],[0,2,0,0],[0,0,-1,0],[0,0,0,-2]])
+        #print("lambdav: \n",arrumaZeros((autovalores@autovetores).T),"\n")
     elif escolha == 2:
         A = LerArquivo("input-b")
-        print(A)
+        print("Matriz de entrada: \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
-        iteracoes, autovalores, autovetores, A = QR(H,HT,'s')
+        iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
         autovalores = matrizAutovalores(autovalores)
         print("Autovalores analíticos: \n",AutovaloresAnaliticos(),"\n")
         autovetores = ordemAutovetores(autovetores)
         #EscreverArquivo(np.round(autovetores,7)) # Caso queira gerar um arquivo com a matriz de autovetores, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
-        T = autovetores@autovalores@autovetores.T
         print("Verificação A*v = lambda*v")
-        print("T: \n",T,"\n")
+        print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
         #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         
