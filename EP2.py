@@ -361,6 +361,7 @@ def LerArquivoC(nome):
         E = float(segundaLinha[2])
         print("E: ",E)
         line = 0
+        M = np.array(vetorNZerado(nosTotal))
         K = MatrizZerada(24)
         for linha in range(2,29):
             linhas = content[linha].split()
@@ -377,16 +378,25 @@ def LerArquivoC(nome):
                 else:
                     L = float(linhas[coluna])
                     print("L1: ",L)
+            M[i-1]+=((L*ro*area)/2)
+            M[j-1]+=((L*ro*area)/2)
             k = MatrizDeRigidezIntermediaria(area,E,L,deg2rad(angle))
-            print(k)
+            print("M: \n",M,"\n")
+            print("k: \n",k)
             K = MatrizDeRigidez(i,j,k,K)
             line+=1
-        EscreverArquivo(np.round(K,3))
+        #EscreverArquivo(np.round(K,3)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         return K
             
 def deg2rad(angle):
     return angle*math.pi/180
 
+def vetorNZerado(n):
+    newList = []
+    for i in range(n):
+        newList.append([float(0)])
+    return newList
+    
 def EscreverArquivo(A):
     nome = str(input("nome do arquivo: "))
     with open(nome,'w') as arq:
@@ -466,7 +476,7 @@ def Verifica(A,autovetores,autovalores):
     for i in range(len(autovalores)):
         for j in range(len(autovalores)):
             newList = np.append(newList,autovetores[j][i]) 
-        print("Av: \n",ArrumaZerrosVetor(A@newList),"\n")
+        print("Av: \n",ArrumaZerrosVetor(A@newList))
         print("lambdav: \n",autovalores[i]*newList,"\n")
         newList = np.array([])
     
@@ -481,14 +491,13 @@ def tarefa1(escolha):
         print("Matriz de entrada: \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
         iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
-        autovalores = matrizAutovalores(autovalores)
+        #autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
         Verifica(A,autovetores,autovalores)
         print("autovetores: \n",np.round(autovetores,7),"\n")
         print("Autovetores normalizados: \n",np.round(normalizacao(autovetores),7),"\n")
         #print("Verificação A*v = lambda*v")
         print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
-        print("Matriz inicial: \n",A,"\n")
         #print("Av: \n",arrumaZeros(A@autovetores),"\n")
         #autovalores = np.array([[7,0,0,0],[0,2,0,0],[0,0,-1,0],[0,0,0,-2]])
         #print("lambdav: \n",arrumaZeros((autovalores@autovetores).T),"\n")
