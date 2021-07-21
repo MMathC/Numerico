@@ -317,12 +317,6 @@ def TransformacaoHouseholder(A):
         i-=1
         iteracao+=1
     H = arrumaZeros(H)
-    escolha = str(input("Gostaria de imprimir a matriz H tridiagonal resultante da transformação de Householder (s/n):"))
-    if escolha == 's':
-        print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
-    escolha1 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
-    if escolha1 == 's':
-        print("HT: \n",np.round(HT,7),"\n")
     return H, HT
 
 def matrizAutovalores(autovalores):
@@ -535,10 +529,27 @@ def tarefa1(escolha):
         iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
         autovetores = ordemAutovetores(autovetores)
         print("autovetores: \n",np.round(autovetores,7),"\n")
-        print("Autovetores normalizados: \n",np.round(normalizacao(autovetores),7),"\n")
         print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
-        VerificaCondicao(A,autovetores,autovalores)
-        verificaOrtogonalidade(autovetores)
+        escolha = str(input("Gostaria de imprimir a verificação A*v = lambda*v (s/n): "))
+        if escolha == 's':
+            VerificaCondicao(A,autovetores,autovalores)
+        escolha1 = str(input("Gostaria de imprimir a verificação da ortogonalidade dos autovetores (s/n): "))
+        if escolha1 == 's':
+            print("\n Gostaria de imprimir a verificação na forma de: ")
+            print("1) Produtos internos")
+            print("2) Matriz")
+            escolha2 = int(input("Escolha a forma: "))
+            if escolha2 == 1:
+                verificaOrtogonalidade(autovetores)
+            elif escolha2 == 2:
+                print("Verificação da ortogonalidade dos autovetores")
+                print(arrumaZeros(autovetores@autovetores.T))
+        escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
+        if escolha3 == 's':
+            print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
+        escolha4 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
+        if escolha4 == 's':
+            print("HT: \n",np.round(HT,7),"\n")
         
     elif escolha == 2:
         A = LerArquivo("input-b")
@@ -568,6 +579,12 @@ def tarefa1(escolha):
             elif escolha2 == 2:
                 print("Verificação da ortogonalidade dos autovetores")
                 print(arrumaZeros(autovetores@autovetores.T))
+        escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
+        if escolha3 == 's':
+            print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
+        escolha4 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
+        if escolha4 == 's':
+            print("HT: \n",np.round(HT,7),"\n")
         
 
 def tarefa2():

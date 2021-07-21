@@ -11,7 +11,9 @@ Para obter os resultados do item a, deve-se:
 2.	Digitar ‘1’ no segundo input
 3.	Digitar ‘s’ caso queira imprimir a matriz H tridiagonal resultante da transformação de Householder, digitar ‘n’ caso contrário
 4.	Digitar ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digitar ‘n’ caso contrário
-5.	Digitar o tamanho da matriz desejada (4, 8, 16, 32)
+5.	Digitar ‘s’ caso queira imprimir a verificação A*v = lambda*v, digitar ‘n’ caso contrário
+6.	Digitar ‘s’ caso queira imprimir a verificação da ortogonalidade dos autovetores, digitar ‘n’ caso contrário
+7.	Caso tenha digitado ‘s’, digite 1 para imprimir a verificação na forma de produtos internos ou digite 2 para imprimir a verificação na forma de matriz
 
 Para obter os resultados do item b, deve-se:
 1.	Digitar ‘1’ no primeiro input
