@@ -358,7 +358,7 @@ def LerArquivoC(nome):
         #print("Ro",ro)
         area = float(segundaLinha[1])
         #print("A: ",area)
-        E = float(segundaLinha[2])
+        E = float(segundaLinha[2]*(10**9)) # 1Pa = 1N/m^2 , G = 10^9
         #print("E: ",E)
         line = 0
         M = np.array(vetorNZerado(nosTotal))
@@ -591,13 +591,13 @@ def tarefa2():
     k,m = LerArquivoC('input-c')
     M = Massas(m)
     M_ = MassasElevadas(M,-1/2)
-    #EscreverArquivo(np.round(M_,5))
+    EscreverArquivo(np.round(M_,5))
     K = M_ @ k @ M_
-    #EscreverArquivo(np.round(K,5))
-    H, HT = TransformacaoHouseholder(K)
-    EscreverArquivo(np.round(H,5))
-    iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
-    EscreverArquivo(np.round(matrizDeAutovalores,5))
+    EscreverArquivo(np.round(K,5))
+    #H, HT = TransformacaoHouseholder(K)
+    #EscreverArquivo(np.round(H,5))
+    #iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
+    #EscreverArquivo(np.round(matrizDeAutovalores,5))
                 
         
 def main():
