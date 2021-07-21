@@ -349,17 +349,17 @@ def LerArquivoC(nome):
         primeiraLinha = content[0].split()
         segundaLinha = content[1].split()
         nosTotal = int(primeiraLinha[0])
-        print("Numeros de nós total: ",nosTotal)
+        #print("Numeros de nós total: ",nosTotal)
         nosNaoFixos = int(primeiraLinha[1])
-        print("Número de nós não fixos: ",nosNaoFixos)
+        #print("Número de nós não fixos: ",nosNaoFixos)
         numBarras = int(primeiraLinha[2])
-        print("Número de barras: ",numBarras)
+        #print("Número de barras: ",numBarras)
         ro = float(segundaLinha[0])
-        print("Ro",ro)
+        #print("Ro",ro)
         area = float(segundaLinha[1])
-        print("A: ",area)
+        #print("A: ",area)
         E = float(segundaLinha[2])
-        print("E: ",E)
+        #print("E: ",E)
         line = 0
         M = np.array(vetorNZerado(nosTotal))
         K = MatrizZerada(24)
@@ -368,21 +368,21 @@ def LerArquivoC(nome):
             for coluna in range(4):
                 if coluna == 0:
                     i = int(linhas[coluna])
-                    print("i1: ",i)
+                    #print("i1: ",i)
                 elif coluna == 1:
                     j = int(linhas[coluna])
-                    print("j1: ",j)
+                    #print("j1: ",j)
                 elif coluna == 2:
                     angle = float(linhas[coluna])
-                    print("angulo: ",deg2rad(angle))
+                    #print("angulo: ",deg2rad(angle))
                 else:
                     L = float(linhas[coluna])
-                    print("L1: ",L)
+                    #print("L1: ",L)
             M[i-1]+=((L*ro*area)/2)
             M[j-1]+=((L*ro*area)/2)
             k = MatrizDeRigidezIntermediaria(area,E,L,deg2rad(angle))
-            print("M: \n",M,"\n")
-            print("k: \n",k)
+            #print("M: \n",M,"\n")
+            #print("k: \n",k)
             K = MatrizDeRigidez(i,j,k,K)
             line+=1
         #EscreverArquivo(np.round(K,3)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
@@ -426,11 +426,11 @@ def MatrizDeRigidezIntermediaria(area,E,L,angle):
     K.append([-C**2,-C*S,C**2,C*S])
     K.append([-C*S,-S**2,C*S,S**2])
     K = np.array(K)
-    print("k: \n",K,"\n")
-    print("Area: ",area)
-    print("E: ",E)
-    print("L: ",L)
-    print("angle: ",angle)
+    #print("k: \n",K,"\n")
+    #print("Area: ",area)
+    #print("E: ",E)
+    #print("L: ",L)
+    #print("angle: ",angle)
     return np.array((area*E/L)*K)
 
 def MatrizZerada(n):
@@ -442,7 +442,7 @@ def MatrizZerada(n):
     return K
     
 def MatrizDeRigidez(i,j,k,K):
-    print("i: ",i," j: ",j)
+    #print("i: ",i," j: ",j)
     if (2*i) < 24 and (2*j) < 24:
         K[2*i-1, 2*i-1]+=k[0][0]
         K[2*i, 2*i-1]+=k[1][0]
@@ -471,7 +471,7 @@ def ArrumaZerrosVetor(vetor):
             newList = np.append(newList,vetor[i])
     return newList
 
-def Verifica(A,autovetores,autovalores):
+def VerificaCondicao(A,autovetores,autovalores):
     newList = np.array([])
     for i in range(len(autovalores)):
         for j in range(len(autovalores)):
@@ -479,10 +479,24 @@ def Verifica(A,autovetores,autovalores):
         print("Av: \n",ArrumaZerrosVetor(A@newList))
         print("lambdav: \n",autovalores[i]*newList,"\n")
         newList = np.array([])
+
+def verificaOrtogonalidade(autovetores):
+    newList = []
+    for i in range(len(autovetores)):
+        newList.append([])
+        for j in range(len(autovetores)):
+            newList[i].append(autovetores[j][i])
+    newList = np.array(newList)
+    
+    for i in range(len(newList)):
+        for j in range(i+1,len(newList)):
+            if i!=j:
+                print(f'v{i}.v{j}: ',newList[i]@(newList[j]))
+
     
     
 # ------------------------------------------------------------------------- #
-#                  ]                 Tarefa 
+#                                   Tarefa 
 # ------------------------------------------------------------------------- #
 
 def tarefa1(escolha):
@@ -493,7 +507,8 @@ def tarefa1(escolha):
         iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
         #autovalores = matrizAutovalores(autovalores)
         autovetores = ordemAutovetores(autovetores)
-        Verifica(A,autovetores,autovalores)
+        
+        
         print("autovetores: \n",np.round(autovetores,7),"\n")
         print("Autovetores normalizados: \n",np.round(normalizacao(autovetores),7),"\n")
         #print("Verificação A*v = lambda*v")
@@ -501,6 +516,8 @@ def tarefa1(escolha):
         #print("Av: \n",arrumaZeros(A@autovetores),"\n")
         #autovalores = np.array([[7,0,0,0],[0,2,0,0],[0,0,-1,0],[0,0,0,-2]])
         #print("lambdav: \n",arrumaZeros((autovalores@autovetores).T),"\n")
+        VerificaCondicao(A,autovetores,autovalores)
+        verificaOrtogonalidade(autovetores)
     elif escolha == 2:
         A = LerArquivo("input-b")
         print("Matriz de entrada: \n",A,"\n")
@@ -509,12 +526,16 @@ def tarefa1(escolha):
         autovalores = matrizAutovalores(autovalores)
         print("Autovalores analíticos: \n",AutovaloresAnaliticos(),"\n")
         autovetores = ordemAutovetores(autovetores)
+        T = autovetores@matrizDeAutovalores@autovetores.T
         #EscreverArquivo(np.round(autovetores,7)) # Caso queira gerar um arquivo com a matriz de autovetores, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         print("Verificação A*v = lambda*v")
-        print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
+        print("T = H A H.T: \n",T,"\n")
         #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
+        print("H: \n",H,"\n")
         #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
-        
+        print("T: \n",T,"\n")
+        VerificaCondicao(A,autovetores,autovalores)
+        verificaOrtogonalidade(autovetores)
         
 def main():
     print("1) Testes")
