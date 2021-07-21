@@ -340,7 +340,7 @@ def LerArquivo(nome):
                 newList[line].append(int(linhas[j]))
             line+=1
         A = np.array(newList)
-        arq.close()
+        #arq.close()
     return A
 
 def LerArquivoC(nome):
@@ -358,19 +358,19 @@ def LerArquivoC(nome):
         #print("Ro",ro)
         area = float(segundaLinha[1])
         #print("A: ",area)
-        E = float(segundaLinha[2]*(10**9)) # 1Pa = 1N/m^2 , G = 10^9
+        E = float(segundaLinha[2])*(10**9) # 1Pa = 1N/m^2 , G = 10^9
         #print("E: ",E)
         line = 0
         M = np.array(vetorNZerado(nosTotal))
         K = MatrizZerada(24)
-        for linha in range(2,29):
+        for linha in range(2,30):
             linhas = content[linha].split()
             for coluna in range(4):
                 if coluna == 0:
-                    i = int(linhas[coluna])
+                    i = int(linhas[coluna])-1
                     #print("i1: ",i)
                 elif coluna == 1:
-                    j = int(linhas[coluna])
+                    j = int(linhas[coluna])-1
                     #print("j1: ",j)
                 elif coluna == 2:
                     angle = float(linhas[coluna])
@@ -378,25 +378,25 @@ def LerArquivoC(nome):
                 else:
                     L = float(linhas[coluna])
                     #print("L1: ",L)
-            M[i-1]+=((L*ro*area)/2)
-            M[j-1]+=((L*ro*area)/2)
+            M[i]+=((L*ro*area)/2)
+            M[j]+=((L*ro*area)/2)
             k = MatrizDeRigidezIntermediaria(area,E,L,deg2rad(angle))
-            #print("M: \n",M,"\n")
+            
             #print("k: \n",k)
             K = MatrizDeRigidez(i,j,k,K)
             line+=1
+        M = M[:-2]
+        #print("M: \n",M,"\n")
         #EscreverArquivo(np.round(K,3)) # Caso queira gerar um arquivo com a matriz K, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
-        arq.close()
         return K, M
 
 def Massas(m):
-    M = identidade((len(m)-2)*2)
-    M[0][0] = 0
-    M[len(M)-1][len(M)-1] = 0
-    for i in range(1,len(m)-1):
-        if i < len(m)-2:
+    M = identidade(len(m)*2)
+    for i in range(len(m)):
+        if i < len(m):
             M[2*i,2*i] = m[i]
-            M[2*i-1,2*i-1] = m[i]
+            M[2*i+1,2*i+1] = m[i]
+    #print("M: \n",M,"\n")
     #EscreverArquivo(np.round(M,2))
     return M
 
@@ -427,7 +427,7 @@ def EscreverArquivo(A):
                 else:
                     arq.write(str(A[i][j])+" ")
             arq.write("\n")
-    arq.close()
+    #arq.close()
     
 def AutovaloresAnaliticos():
     lambdai = []
@@ -464,22 +464,27 @@ def MatrizZerada(n):
 def MatrizDeRigidez(i,j,k,K):
     #print("i: ",i," j: ",j)
     if (2*i) < 24 and (2*j) < 24:
-        K[2*i-1, 2*i-1]+=k[0][0]
-        K[2*i, 2*i-1]+=k[1][0]
-        K[2*j-1, 2*i-1]+=k[2][0]
-        K[2*j, 2*i-1]+=k[3][0]
-        K[2*i-1, 2*i]+=k[0][1]
-        K[2*i, 2*i]+=k[1][1]
-        K[2*j-1, 2*i]+=k[2][1]
-        K[2*j, 2*i]+=k[3][1]
-        K[2*i-1, 2*j-1]+=k[0][2]
-        K[2*i, 2*j-1]+=k[1][2]
-        K[2*j-1, 2*j-1]+=k[2][2]
-        K[2*j, 2*j-1]+=k[3][2]
-        K[2*i-1, 2*j]+=k[0][3]
-        K[2*i, 2*j]+=k[1][3]
-        K[2*j-1, 2*j]+=k[2][3]
-        K[2*j, 2*j]+=k[3][3]
+        K[2*i, 2*i]+=k[0][0]
+        K[2*i+1, 2*i]+=k[1][0]
+        K[2*j, 2*i]+=k[2][0]
+        K[2*j+1, 2*i]+=k[3][0]
+        K[2*i, 2*i+1]+=k[0][1]
+        K[2*i+1, 2*i+1]+=k[1][1]
+        K[2*j, 2*i+1]+=k[2][1]
+        K[2*j+1, 2*i+1]+=k[3][1]
+        K[2*i, 2*j]+=k[0][2]
+        K[2*i+1, 2*j]+=k[1][2]
+        K[2*j, 2*j]+=k[2][2]
+        K[2*j+1, 2*j]+=k[3][2]
+        K[2*i, 2*j+1]+=k[0][3]
+        K[2*i+1, 2*j+1]+=k[1][3]
+        K[2*j, 2*j+1]+=k[2][3]
+        K[2*j+1, 2*j+1]+=k[3][3]
+    if 2*j == 24 or 2*j == 26:
+        K[2*i, 2*i]+=k[0][0]
+        K[2*i+1, 2*i]+=k[1][0]
+        K[2*i, 2*i+1]+=k[0][1]
+        K[2*i+1, 2*i+1]+=k[1][1]
     return np.array(K)
 
 def ArrumaZerrosVetor(vetor):
@@ -589,14 +594,21 @@ def tarefa1(escolha):
 
 def tarefa2():
     k,m = LerArquivoC('input-c')
+    print("m: \n",m,"\n")
+    #print("k: \n",k)
     M = Massas(m)
+    #EscreverArquivo(np.round(M,3))
+    #print("M: \n",M,"\n")
     M_ = MassasElevadas(M,-1/2)
-    EscreverArquivo(np.round(M_,5))
+    #EscreverArquivo(np.round(M_,5))
     K = M_ @ k @ M_
-    EscreverArquivo(np.round(K,5))
-    #H, HT = TransformacaoHouseholder(K)
+    #eigvals,eivec = np.linalg.eig(K)
+    #print(np.sqrt(eigvals))
+    #EscreverArquivo(np.round(K,5))
+    H, HT = TransformacaoHouseholder(K)
     #EscreverArquivo(np.round(H,5))
-    #iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
+    iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
+    print(np.sqrt(autovalores))
     #EscreverArquivo(np.round(matrizDeAutovalores,5))
                 
         
