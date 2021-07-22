@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 EP2 - MAP3121
-
 Matheus Monteiro Casagrandi - 10853290
 Luís Gustavo Gonçalves de Campos - 10791854
 """
 
 import numpy as np
 import math
+
 
 # ------------------------------------------------------------------------- #
 #                                   EP1 
@@ -247,13 +247,13 @@ def normalizacao(autovetores): # Normaliza a matriz parametro
 #                                   EP2 
 # ------------------------------------------------------------------------- #
 
-def normaAoQuadrado(a):
+def normaAoQuadrado(a): # Retorna a norma ao quadrado
     c = 0
     for i in range(len(a)):
         c += a[i]**2 
     return c
 
-def norma(a):
+def norma(a): # Retorna a norma
     return math.sqrt(normaAoQuadrado(a))
 
 def e(n): # retorna vetor e
@@ -263,7 +263,7 @@ def e(n): # retorna vetor e
         e = np.append(e,0)
     return e
 
-def wBarra(an):
+def wBarra(an): # Retorna o wBarra
     delta = an[0]/abs(an[0])
     wbarraT = an + delta*norma(an)*e(len(an))
     wbarra = []
@@ -271,7 +271,7 @@ def wBarra(an):
         wbarra.append([wbarraT[i]])
     return np.array(wbarra)
 
-def Hw(wbarra,n):
+def Hw(wbarra,n): # Retorna o Hw
     I = identidade(len(wbarra))
     Hwi = I - 2*(wbarra@wbarra.T)/normaAoQuadrado(wbarra)
     Hw = identidade(n)
@@ -286,7 +286,7 @@ def Hw(wbarra,n):
                 Hw[i][j] = Hwi[i-diferenca][j-diferenca]
     return Hw
 
-def a(A,k):
+def a(A,k): # Retorna o vetor aBarra
     a = np.array([])
     for i in range(len(A)):
         for j in range(len(A[0])):
@@ -294,14 +294,14 @@ def a(A,k):
                 a = np.append(a,A[i][j])
     return a
 
-def arrumaZeros(A):
+def arrumaZeros(A): # Retorna a matriz A com valores muito pequenos aproximados para zero
     for i in range(len(A)):
         for j in range(len(A[0])):
             if abs(A[i][j]) < 1e-8:
                 A[i][j] = 0
     return A
 
-def TransformacaoHouseholder(A):
+def TransformacaoHouseholder(A): # Faz a transformação de Householder, retorna a matriz tridiagonal e a matriz HT
     n = len(A)
     iteracao = 0
     Hw1 = Hw(wBarra(a(A,iteracao)),n)
@@ -318,7 +318,7 @@ def TransformacaoHouseholder(A):
     H = arrumaZeros(H)
     return H, HT
 
-def matrizAutovalores(autovalores):
+def matrizAutovalores(autovalores): # Retorna uma matriz com os elementos do vetor(n) parâmetro na diagonal principal de uma matriz (nxn)
     ident = identidade(len(autovalores))
     for i in range(len(ident)):
         for j in range(len(ident[0])):
@@ -326,7 +326,7 @@ def matrizAutovalores(autovalores):
                 ident[i][j] = autovalores[i]
     return ident
 
-def LerArquivo(nome):
+def LerArquivo(nome): # Le os arquivos a e b
     with open(nome,'r') as arq:
         content = arq.readlines()
         tamanho = int(content[0])
@@ -342,7 +342,7 @@ def LerArquivo(nome):
         #arq.close()
     return A
 
-def LerArquivoC(nome):
+def LerArquivoC(nome): # Le o arquivo c
     with open(nome,'r') as arq:
         content = arq.readlines()
         primeiraLinha = content[0].split()
@@ -389,7 +389,7 @@ def LerArquivoC(nome):
         #EscreverArquivo(np.round(K,3)) # Caso queira gerar um arquivo com a matriz K, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         return K, M
 
-def Massas(m):
+def Massas(m): # Retorna a matriz de massas
     M = identidade(len(m)*2)
     for i in range(len(m)):
         if i < len(m):
@@ -399,7 +399,7 @@ def Massas(m):
     #EscreverArquivo(np.round(M,2))
     return M
 
-def MassasElevadas(M, n):
+def MassasElevadas(M, n): # Eleva os elementos da diagonal principal a n
     for i in range(len(M)):
         for j in range(len(M)):
             if i==j and M[i][j]!=0:
@@ -407,16 +407,16 @@ def MassasElevadas(M, n):
     #EscreverArquivo(np.round(M,7))
     return M
 
-def deg2rad(angle):
+def deg2rad(angle): # Transforma um angulo em grau para radiano
     return angle*math.pi/180
 
-def vetorNZerado(n):
+def vetorNZerado(n): # Retorna um vetor n zerado
     newList = []
     for i in range(n):
         newList.append([float(0)])
     return newList
     
-def EscreverArquivo(A):
+def EscreverArquivo(A): # Escreve um aquivo com a matriz A
     nome = str(input("nome do arquivo: "))
     with open(nome,'w') as arq:
         for i in range(len(A)):
@@ -428,7 +428,7 @@ def EscreverArquivo(A):
             arq.write("\n")
     #arq.close()
     
-def AutovaloresAnaliticos():
+def AutovaloresAnaliticos(): # Retorna os autovetores calculados pela fórmula dada no enunciado (item b)
     lambdai = []
     n = 20
     for i in range(1,n+1):
@@ -436,7 +436,7 @@ def AutovaloresAnaliticos():
         lambdai.append(autoval)
     return lambdai
 
-def MatrizDeRigidezIntermediaria(area,E,L,angle):
+def MatrizDeRigidezIntermediaria(area,E,L,angle): # Calcula a matriz de rigidez intermediaria
     C = math.cos(angle)
     S = math.sin(angle)
     K = []
@@ -452,7 +452,7 @@ def MatrizDeRigidezIntermediaria(area,E,L,angle):
     #print("angle: ",angle)
     return np.array((area*E/L)*K)
 
-def MatrizZerada(n):
+def MatrizZerada(n): # Retorna uma matriz nxn zerada
     K = identidade(n)
     for i in range(len(K)):
         for j in range(len(K)):
@@ -460,7 +460,7 @@ def MatrizZerada(n):
                 K[i][j] = 0
     return K
     
-def MatrizDeRigidez(i,j,k,K):
+def MatrizDeRigidez(i,j,k,K): # Calcula as parcelas da matriz de rigidez total
     #print("i: ",i," j: ",j)
     if (2*i) < 24 and (2*j) < 24:
         K[2*i, 2*i]+=k[0][0]
@@ -486,7 +486,7 @@ def MatrizDeRigidez(i,j,k,K):
         K[2*i+1, 2*i+1]+=k[1][1]
     return np.array(K)
 
-def ArrumaZerrosVetor(vetor):
+def ArrumaZerrosVetor(vetor): # Retorna o vetor com valores muito pequenos aproximados para zero
     newList = np.array([])
     for i in range(len(vetor)):
         if abs(vetor[i]) < 1e-6:
@@ -495,7 +495,7 @@ def ArrumaZerrosVetor(vetor):
             newList = np.append(newList,vetor[i])
     return newList
 
-def VerificaCondicao(A,autovetores,autovalores):
+def VerificaCondicao(A,autovetores,autovalores): # Printa a verificação A*v = lambda*v
     print("Verificação A*v = lambda*v")
     newList = np.array([])
     for i in range(len(autovalores)):
@@ -505,7 +505,7 @@ def VerificaCondicao(A,autovetores,autovalores):
         print("lambdav: \n",ArrumaZerrosVetor(autovalores[i]*newList),"\n")
         newList = np.array([])
 
-def verificaOrtogonalidade(autovetores):
+def verificaOrtogonalidade(autovetores): # Printa a verificação da ortogonalidade dos autovetores
     print("Verificação da ortogonalidade dos autovetores")
     newList = []
     for i in range(len(autovetores)):
@@ -519,9 +519,8 @@ def verificaOrtogonalidade(autovetores):
             if i!=j:
                 print(f'v{i}.v{j}: ',newList[i]@(newList[j]))
 
-def MenoresValores(vetor,n):
+def MenoresValores(vetor,n): # Retorna as n menores frequências e as posições para achar os autovetores relativos
     newVetor = np.array(vetor[:-(len(vetor)-n)])
-    
     indice = 0
     posicoes = []
     posicao = 0
@@ -536,7 +535,7 @@ def MenoresValores(vetor,n):
         posicao = 0
     return newVetor, posicoes
 
-def FrequenciasEModos(frequencias, posicoes,autovetores,M_):
+def FrequenciasEModos(frequencias, posicoes,autovetores,M_): # Printa as frequências e os relativos autovetores 
     autovetor = np.array([])
     for i in range(len(frequencias)):
         print("\nfrequência: ",frequencias[i],"rad/s")
@@ -545,14 +544,14 @@ def FrequenciasEModos(frequencias, posicoes,autovetores,M_):
         print("modo de vibração: \n",M_@autovetor,"\n")
         autovetor = np.array([])
 
-def vetorElevado(vetor,n):
+def vetorElevado(vetor,n): # Eleva os elementos do vetor a n
     vec1 = np.zeros(2*len(vetor))
     for i in range(len(vetor)):
         vec1[2*i+1] = vetor[i]**n
         vec1[2*i] = vetor[i]**n
     return vec1
 
-def Vec2Matriz(vetor,coluna):
+def Vec2Matriz(vetor,coluna): # Transforma um vetor (n) em uma matriz n x coluna
     aux = []
     for i in range(len(vetor)):
         aux.append([])
@@ -563,8 +562,8 @@ def Vec2Matriz(vetor,coluna):
 #                                   Tarefas 
 # ------------------------------------------------------------------------- #
 
-def tarefa1(escolha):
-    if escolha == 1:
+def tarefa1(escolha): # 4.1 Testes
+    if escolha == 1: # Item a
         A = LerArquivo("input-a")
         print("Matriz de entrada (A): \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
@@ -594,7 +593,7 @@ def tarefa1(escolha):
         if escolha4 == 's':
             print("HT: \n",np.round(HT,7),"\n")
         
-    elif escolha == 2:
+    elif escolha == 2: # Item b
         A = LerArquivo("input-b")
         print("Matriz de entrada (A): \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
@@ -631,7 +630,7 @@ def tarefa1(escolha):
             print("HT: \n",np.round(HT,7),"\n")
 
 
-def tarefa2():
+def tarefa2(): # Item c
     k,m = LerArquivoC('input-c')
     m_ = vetorElevado(m, -1/2)
     m_v = Vec2Matriz(m_,1)
@@ -686,6 +685,21 @@ def tarefa2():
     escolha7 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
     if escolha7 == 's':
         print("HT: \n",np.round(HT,7),"\n")
+        
+    escolha = str(input("Gostaria de imprimir a verificação A*v = lambda*v (s/n): "))
+    if escolha == 's':
+        VerificaCondicao(K,autovetores,autovalores)
+    escolha1 = str(input("Gostaria de imprimir a verificação da ortogonalidade dos autovetores (s/n): "))
+    if escolha1 == 's':
+        print("\n Gostaria de imprimir a verificação na forma de: ")
+        print("1) Produtos internos")
+        print("2) Matriz")
+        escolha2 = int(input("Escolha a forma: "))
+        if escolha2 == 1:
+            verificaOrtogonalidade(autovetores)
+        elif escolha2 == 2:
+            print("Verificação da ortogonalidade dos autovetores")
+            print(arrumaZeros(autovetores@autovetores.T))
     
     
 def main():
@@ -702,3 +716,4 @@ def main():
         print("\nresultados obtidos foram: \n")
         tarefa2()
 main()
+
