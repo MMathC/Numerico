@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 EP2 - MAP3121
-
 Matheus Monteiro Casagrandi - 10853290
 Luís Gustavo Gonçalves de Campos - 10791854
 """
