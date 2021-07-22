@@ -36,3 +36,6 @@ Para obter os resultados do item c, deve-se:
 7.	Digite ‘s’ caso queira imprimir a matriz K, digite ‘n’ caso contrário
 8.	Digite ‘s’ caso queira imprimir a matriz K~ (K~ = M-½ K M-½), digite ‘n’ caso contrário
 9.	Digite ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digite ‘n’ caso contrário
+10.	Digite ‘s’ caso queira imprimir a verificação A*v = lambda*v, digite ‘n’ caso contrário
+11.	Digite ‘s’ caso queira imprimir a verificação da ortogonalidade dos autovetores, digite ‘n’ caso contrário
+12.	Caso tenha digitado ‘s’, digite 1 para imprimir a verificação na forma de produtos internos ou digite 2 para imprimir a verificação na forma de matriz
