@@ -7,27 +7,32 @@ Bibliotecas usadas: - numpy
 
 --- 4.1 Testes ---
 Para obter os resultados do item a, deve-se:
-1.	Digitar ‘1’ no primeiro input
-2.	Digitar ‘1’ no segundo input
-3.	Digitar ‘s’ caso queira imprimir a matriz H tridiagonal resultante da transformação de Householder, digitar ‘n’ caso contrário
-4.	Digitar ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digitar ‘n’ caso contrário
-5.	Digitar ‘s’ caso queira imprimir a verificação A*v = lambda*v, digitar ‘n’ caso contrário
-6.	Digitar ‘s’ caso queira imprimir a verificação da ortogonalidade dos autovetores, digitar ‘n’ caso contrário
-7.	Caso tenha digitado ‘s’, digite 1 para imprimir a verificação na forma de produtos internos ou digite 2 para imprimir a verificação na forma de matriz
+1.	Digite ‘1’ no primeiro input
+2.	Digite ‘1’ no segundo input
+3.	Digite ‘s’ caso queira imprimir a matriz H tridiagonal resultante da transformação de Householder, digite ‘n’ caso contrário
+4.	Digite ‘s’ caso queira imprimir a verificação A*v = lambda*v, digite ‘n’ caso contrário
+5.	Digite ‘s’ caso queira imprimir a verificação da ortogonalidade dos autovetores, digite ‘n’ caso contrário
+6.	Caso tenha digitado ‘s’, digite 1 para imprimir a verificação na forma de produtos internos ou digite 2 para imprimir a verificação na forma de matriz
+7.	Digite ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digite ‘n’ caso contrário
 
 Para obter os resultados do item b, deve-se:
-1.	Digitar ‘1’ no primeiro input
-2.	Digitar ‘2’ no segundo input
-3.	Digitar ‘s’ caso queira imprimir a matriz H tridiagonal resultante da transformação de Householder, digitar ‘n’ caso contrário
-4.	Digitar ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digitar ‘n’ caso contrário
-5.	Digitar ‘s’ caso queira imprimir a verificação A*v = lambda*v, digitar ‘n’ caso contrário
-6.	Digitar ‘s’ caso queira imprimir a verificação da ortogonalidade dos autovetores, digitar ‘n’ caso contrário
-7.	Caso tenha digitado ‘s’, digite 1 para imprimir a verificação na forma de produtos internos ou digite 2 para imprimir a verificação na forma de matriz
+1.	Digite ‘1’ no primeiro input
+2.	Digite ‘2’ no segundo input
+3.	Digite ‘s’ caso queira imprimir a matriz H tridiagonal resultante da transformação de Householder, digite ‘n’ caso contrário
+4.	Digite ‘s’ caso queira imprimir a verificação A*v = lambda*v, digite ‘n’ caso contrário
+5.	Digite ‘s’ caso queira imprimir a verificação da ortogonalidade dos autovetores, digite ‘n’ caso contrário
+6.	Caso tenha digitado ‘s’, digite 1 para imprimir a verificação na forma de produtos internos ou digite 2 para imprimir a verificação na forma de matriz
+7.	Digite ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digite ‘n’ caso contrário
 
 
 --- 4.2 Aplicação: Treliças Planas ---
 Para obter os resultados do item c, deve-se:
-1.	Digitar ‘2’ no primeiro input
-2.	Digitar o número da condição inicial (1, 2 ou 3)
-3.	Digitar o tempo
-4.	Digitar o passo no tempo
+1.	Digite ‘2’ no primeiro input
+2.	Digite ‘s’ caso queira imprimir todas as frequências encontradas, digite ‘n’ caso contrário
+3.	Digite ‘s’ caso queira imprimir os autovalores e os autovetores, digite ‘n’ caso contrário
+4.	Caso tenha digitado ‘s’, digite quantas casas decimais para o arredondamento (ex: '5')
+5.	Digite ‘s’ caso queira imprimir a matriz tridiagonal resultante da transformação de Householder, digite ‘n’ caso contrário
+6.	Digite ‘s’ caso queira imprimir as Massas (M e M^(-1/2)), digite ‘n’ caso contrário
+7.	Digite ‘s’ caso queira imprimir a matriz K, digite ‘n’ caso contrário
+8.	Digite ‘s’ caso queira imprimir a matriz K~ (K~ = M-½ K M-½), digite ‘n’ caso contrário
+9.	Digite ‘s’ caso queira imprimir a matriz HT resultante das multiplicação dos Hwi, digite ‘n’ caso contrário

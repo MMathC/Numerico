@@ -233,7 +233,6 @@ def QR(A, HT,desloc):
     autovetores = ordemAutovetores(autovetores)
     
     print("Número de iterações: ",iteracoes,"\n")
-    print("Autovalores encontrados: \n",autovalores,"\n")
     return iteracoes, autovalores, autovetores, A
 
 def normalizacao(autovetores): # Normaliza a matriz parametro
@@ -520,8 +519,46 @@ def verificaOrtogonalidade(autovetores):
             if i!=j:
                 print(f'v{i}.v{j}: ',newList[i]@(newList[j]))
 
+def MenoresValores(vetor,n):
+    newVetor = np.array(vetor[:-(len(vetor)-n)])
     
-    
+    indice = 0
+    posicoes = []
+    posicao = 0
+    while indice < 5:
+        for i in range(len(vetor)):
+            if vetor[i] < newVetor[indice]:
+                newVetor[indice] = vetor[i]
+                posicao = i
+        vetor[posicao] = 99999
+        indice += 1
+        posicoes.append(posicao)
+        posicao = 0
+    return newVetor, posicoes
+
+def FrequenciasEModos(frequencias, posicoes,autovetores,M_):
+    autovetor = np.array([])
+    for i in range(len(frequencias)):
+        print("\nfrequência: ",frequencias[i],"rad/s")
+        for j in range(len(autovetores)):
+            autovetor= np.append(autovetor,autovetores[j][posicoes[i]])
+        print("modo de vibração: \n",M_@autovetor,"\n")
+        autovetor = np.array([])
+
+def vetorElevado(vetor,n):
+    vec1 = np.zeros(2*len(vetor))
+    for i in range(len(vetor)):
+        vec1[2*i+1] = vetor[i]**n
+        vec1[2*i] = vetor[i]**n
+    return vec1
+
+def Vec2Matriz(vetor,coluna):
+    aux = []
+    for i in range(len(vetor)):
+        aux.append([])
+        for j in range(coluna):
+            aux[i].append(vetor[i])
+    return np.array(aux)
 # ------------------------------------------------------------------------- #
 #                                   Tarefas 
 # ------------------------------------------------------------------------- #
@@ -531,7 +568,11 @@ def tarefa1(escolha):
         A = LerArquivo("input-a")
         print("Matriz de entrada (A): \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
+        escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
+        if escolha3 == 's':
+            print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
         iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
+        print("Autovalores encontrados: \n",autovalores,"\n")
         autovetores = ordemAutovetores(autovetores)
         print("autovetores: \n",np.round(autovetores,7),"\n")
         print("T = H A H.T: \n",autovetores@matrizDeAutovalores@autovetores.T,"\n")
@@ -549,9 +590,6 @@ def tarefa1(escolha):
             elif escolha2 == 2:
                 print("Verificação da ortogonalidade dos autovetores")
                 print(arrumaZeros(autovetores@autovetores.T))
-        escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
-        if escolha3 == 's':
-            print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
         escolha4 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
         if escolha4 == 's':
             print("HT: \n",np.round(HT,7),"\n")
@@ -560,13 +598,17 @@ def tarefa1(escolha):
         A = LerArquivo("input-b")
         print("Matriz de entrada (A): \n",A,"\n")
         H, HT = TransformacaoHouseholder(A)
+        escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
+        if escolha3 == 's':
+            print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
         iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
+        print("Autovalores encontrados: \n",autovalores,"\n")
         print("Autovalores analíticos: \n",AutovaloresAnaliticos(),"\n")
         autovetores = ordemAutovetores(autovetores)
         print("autovetores: \n",np.round(autovetores,7),"\n")
         #T = autovetores@matrizDeAutovalores@autovetores.T
         #EscreverArquivo(np.round(autovetores,7)) # Caso queira gerar um arquivo com a matriz de autovetores, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
-        #EscreverArquivo(np.round(H,2)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
+        #EscreverArquivo(np.round(HT,3)) # Caso queira gerar um arquivo com a matriz H (tridiagonal simérica), para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         #print("H: \n",H,"\n")
         #EscreverArquivo(np.round(T,0)) # Caso queira gerar um arquivo com a matriz T, para melhor exibição e analise dos resultados, retire o primeiro hashtag dessa linha
         #print("T = H A H.T: \n",T,"\n")
@@ -584,34 +626,68 @@ def tarefa1(escolha):
             elif escolha2 == 2:
                 print("Verificação da ortogonalidade dos autovetores")
                 print(arrumaZeros(autovetores@autovetores.T))
-        escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
-        if escolha3 == 's':
-            print("H (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
         escolha4 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
         if escolha4 == 's':
             print("HT: \n",np.round(HT,7),"\n")
-        
+
 
 def tarefa2():
     k,m = LerArquivoC('input-c')
-    print("m: \n",m,"\n")
+    m_ = vetorElevado(m, -1/2)
+    m_v = Vec2Matriz(m_,1)
+    #print("m: \n",m,"\n")
     #print("k: \n",k)
     M = Massas(m)
     #EscreverArquivo(np.round(M,3))
-    #print("M: \n",M,"\n")
     M_ = MassasElevadas(M,-1/2)
     #EscreverArquivo(np.round(M_,5))
     K = M_ @ k @ M_
-    #eigvals,eivec = np.linalg.eig(K)
-    #print(np.sqrt(eigvals))
     #EscreverArquivo(np.round(K,5))
     H, HT = TransformacaoHouseholder(K)
     #EscreverArquivo(np.round(H,5))
+    #EscreverArquivo(np.round(HT,5))
     iteracoes, autovalores, autovetores, matrizDeAutovalores = QR(H,HT,'s')
-    print(np.sqrt(autovalores))
-    #EscreverArquivo(np.round(matrizDeAutovalores,5))
-                
+    autovetores = ordemAutovetores(autovetores)
+    #EscreverArquivo(np.round(autovetores,3))
+    frequencias1 = np.sqrt(autovalores)
+    frequencias = np.copy(frequencias1)
+    print("Menores frequências e seus respectivos modos de vibração:")
+    frequenciasDesejadas, posicoes = MenoresValores(frequencias,5)
+    FrequenciasEModos(frequenciasDesejadas,posicoes,autovetores,M_)
+    escolha = str(input("Gostaria de imprimir todas as frequências (s/n): "))
+    if escolha == 's':
+        print("frequências de vibração: \n",frequencias1,"\n")
         
+    escolha1 = str(input("Gostaria de imprimir os autovalores e os autovetores (s/n): "))
+    if escolha1 == 's':
+        escolha2 = int(input("Arredondamento de quantas casas decimais: "))
+        print("Autovalores encontrados: \n",np.round(autovalores,escolha2),"\n")
+        print("autovetores: \n",np.round(autovetores,escolha2),"\n")
+        
+    escolha3 = str(input("Gostaria de imprimir a matriz tridiagonal resultante da transformação de Householder(s/n): "))
+    if escolha3 == 's':
+        print("\nH (matriz tridiagonal resultante da transformação de Householder): \n",np.round(H,1),"\n")
+    
+    escolha4 = str(input("Gostaria de imprimir as Massas (M e M^(-1/2)) (s/n): "))
+    if escolha4 == 's':
+        print("Matriz 24x1 com as massas: \n",m,"\n")
+        print("Matriz 24x1 com as massas elevadas a (-1/2): \n",m_v,"\n")
+        print("\nVale ressaltar que essas matrizes não foram usadas desta forma no EP2, apenas foram printadas dessa maneira para melhor exibição dos resultados.")
+        print("Sendo que cada elemento dessa matriz (24x1) representa um elemento da diagonal principal da matriz utilizada (24x24).")
+    
+    escolha5 = str(input("Gostaria de imprimir a matriz K (s/n):"))
+    if escolha5 == 's':
+        print("Matriz K: \n",k,"\n")
+        
+    escolha6 = str(input("Gostaria de imprimir a matriz K~ = M-½ K M-½ (s/n):"))
+    if escolha6 == 's':
+        print("Matriz K~: \n",K,"\n")
+        
+    escolha7 = str(input("Gostaria de imprimir a matriz HT resultante das multiplicação dos Hwi (s/n):"))
+    if escolha7 == 's':
+        print("HT: \n",np.round(HT,7),"\n")
+    
+    
 def main():
     print("1) Testes")
     print("2) Aplicações: Treliças Planas")
