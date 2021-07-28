@@ -716,5 +716,3 @@ def main():
         print("\nresultados obtidos foram: \n")
         tarefa2()
 main()
-
-print("teste")
