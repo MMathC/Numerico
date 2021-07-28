@@ -717,3 +717,4 @@ def main():
         tarefa2()
 main()
 
+print("teste")
